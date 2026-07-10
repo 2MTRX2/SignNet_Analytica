@@ -9,7 +9,14 @@ class DataLoadingStrategy(ABC):
     reading signed social network data from various file formats or data sources. 
     """
 
-    # loads data and returns a pandas dataframe
     @abstractmethod
     def load(self, file_source) -> pd.DataFrame:
+        """Loads data from the given source and returns a pandas DataFrame.
+
+        Args:
+            file_source: Path to the file, URL, or a file-like object.
+
+        Returns:
+            pd.DataFrame: The loaded data.
+        """
         pass

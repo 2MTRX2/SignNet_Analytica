@@ -2,6 +2,7 @@
 import pandas as pd
 
 from .DataLoadingStrategy import DataLoadingStrategy
+from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
 
 class CsvStrategy(DataLoadingStrategy):
     """Concrete data loading strategy for CSV files.
@@ -15,7 +16,7 @@ class CsvStrategy(DataLoadingStrategy):
             loaded DataFrame into a standardized edge list format.
     """
 
-    def __init__(self, representation):
+    def __init__(self, representation: RepresentationNormaliser):
         """Initializes the CsvStrategy with a specific data representation handler.
 
         Args:

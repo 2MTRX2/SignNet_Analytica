@@ -2,7 +2,7 @@
 import pandas as pd
 
 from .RepresentationNormaliser import RepresentationNormaliser
-from utils.matrix_helpers import transform_matrix_to_edgelist
+from signnet.utils.matrix_helpers import transform_matrix_to_edgelist
 
 class AdjacencyMatrixNormaliser(RepresentationNormaliser):
     """Normalizes an adjacency matrix into the framework's canonical edge list.

@@ -1,6 +1,7 @@
 import pandas as pd
 
 from .DataLoadingStrategy import DataLoadingStrategy
+from io.data_representation.RepresentationNormaliser import RepresentationNormaliser
 
 class JsonStrategy(DataLoadingStrategy):
     """Concrete data loading strategy for JSON files.
@@ -14,7 +15,7 @@ class JsonStrategy(DataLoadingStrategy):
             loaded DataFrame into a standardized edge list format.
     """
 
-    def __init__(self, representation):
+    def __init__(self, representation: RepresentationNormaliser):
         """Initializes the JsonStrategy with a specific data representation handler.
 
         Args:

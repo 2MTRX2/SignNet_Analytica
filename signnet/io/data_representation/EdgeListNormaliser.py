@@ -5,7 +5,7 @@ import pandas as pd
 from .RepresentationNormaliser import RepresentationNormaliser
 
 
-class EdgeListRepresentation(RepresentationNormaliser):
+class EdgeListNormaliser(RepresentationNormaliser):
     """Normalizes an existing edge list DataFrame into the framework's canonical format.
 
     This strategy handles data that is already structured as a list of edges but 
