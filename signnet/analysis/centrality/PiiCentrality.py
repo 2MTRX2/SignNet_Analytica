@@ -8,7 +8,20 @@ from models.SignedNetwork import SignedNetwork
 
 
 class PiiCentrality(CentralityMeasure):
+    """
+    Implements the PII centrality.
 
+    PII_i = Σ β^d (P_i(d) - N_i(d))
+
+    where
+
+    P_i(d) = number of positive edges at distance d
+    N_i(d) = number of negative edges at distance d
+
+    and
+
+    d(node, edge(u,v)) = min(d(node,u), d(node,v))
+    """
 
     def __init__(self, beta: float, max_distance: int):
 
@@ -87,110 +100,3 @@ class PiiCentrality(CentralityMeasure):
             .set_index("node")
         )
     
-
-
-# PiiCentrality.py
-import pandas as pd
-import networkx as nx
-
-from .CentralityMeasure import CentralityMeasure
-from adapters.NetworkXAdapter import NetworkXAdapter
-from models.SignedNetwork import SignedNetwork
-
-class PiiCentrality(CentralityMeasure):
-    """
-    Implements the PII centrality.
-
-        PII_i = Σ β^d (P_i(d) - N_i(d))
-
-    where
-
-        P_i(d) = number of positive edges at distance d
-        N_i(d) = number of negative edges at distance d
-
-    and
-
-        d(node, edge(u,v)) = min(d(node,u), d(node,v))
-    """
-
-    def __init__(self, beta: float, max_distance: int):
-        """Initializes the PII centrality measure.
-
-        Args:
-            beta (float): The negative attenuation factor. Must be strictly negative.
-            max_distance (int): The maximum distance D (exogenous limit). Must be non-negative.
-        """
-        if beta >= 0:
-            raise ValueError("beta must be negative.")
-
-        if max_distance < 0:
-            raise ValueError("max_distance must be non-negative.")
-
-        self.beta = beta
-        self.max_distance = max_distance
-
-    def compute(self, network: SignedNetwork) -> pd.DataFrame:
-        """Computes the PII centrality vector and returns a structured DataFrame."""
-        if network.directed:
-            raise NotImplementedError(
-                "PII centrality currently supports only undirected networks."
-            )
-
-        G = NetworkXAdapter.to_networkx(network)
-
-        # ---------- theoretical constraint ----------
-        max_degree = max(dict(G.degree()).values(), default=0)
-
-        if abs(self.beta) * max_degree > 2:
-            raise ValueError(
-                f"Constraint violated: |beta| * M must be <= 2. "
-                f"(Current |beta|*M = {abs(self.beta) * max_degree:.4f})"
-            )
-
-        rows = []
-
-        for source in network.nodes:
-            # FIX: cutoff um +1 erhöhen, damit Kanten am Rand (Knotendistanz D bis D+1) 
-            # von NetworkX vollständig erfasst werden.
-            distances = nx.single_source_shortest_path_length(
-                G,
-                source,
-                cutoff=self.max_distance + 1
-            )
-
-            pii = 0.0
-
-            for u, v, attr in G.edges(data=True):
-                sign = attr["sign"]
-
-                du = distances.get(u)
-                dv = distances.get(v)
-
-                # Wenn beide Knoten ausserhalb der (erweiterten) Reichweite sind, ignorieren
-                if du is None and dv is None:
-                    continue
-
-                # DEINE FORMEL: Kanten-Distanz ist das Minimum der bekannten Knotendistanzen
-                edge_distance = min(x for x in (du, dv) if x is not None)
-
-                # Wenn die Kante euer exogenes Limit D überschreitet, ignorieren
-                if edge_distance > self.max_distance:
-                    continue
-
-                # Gewichtung berechnen (bei d=0 ist beta^0 = 1.0, also ungedämpft!)
-                weight = self.beta ** edge_distance
-
-                # DEINE LOGIK: Plus-Kanten addieren das Vorzeichen-Gewicht, Minus-Kanten subtrahieren es
-                if sign > 0:
-                    pii += weight
-                elif sign < 0:
-                    pii -= weight
-
-            rows.append(
-                {
-                    "node": source,
-                    "pii_centrality": pii,
-                }
-            )
-
-        return pd.DataFrame(rows).set_index("node")
