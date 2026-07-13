@@ -43,6 +43,15 @@ class PnCentrality(CentralityMeasure):
 
         alpha = 1.0 / (2*number_of_nodes - 2)
 
+        eigenvalues = np.linalg.eigvals(A_tilde)
+        max_eigenval = np.max(np.abs(eigenvalues))
+
+        if max_eigenval > 0 and alpha >= (1.0 / max_eigenval):
+            raise ValueError(
+                f"Alpha ({alpha}) is too large for matrix convergence with this specific dataset. "
+                f"It must be smaller than 1 / |lambda_max| = {1.0 / max_eigenval:.4f}"
+            )
+
         # apply formula: PN = (I - alpha * A_tilde)^(-1) * 1
         I = np.eye(number_of_nodes) 
 
