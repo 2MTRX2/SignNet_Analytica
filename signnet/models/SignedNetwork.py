@@ -1,5 +1,5 @@
+# SignedNetwork.py
 import pandas as pd
-import networkx as nx
 from typing import Set, List
 
 class SignedNetwork:
