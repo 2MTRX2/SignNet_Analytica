@@ -95,8 +95,5 @@ class PiiCentrality(CentralityMeasure):
                 }
             )
 
-        return (
-            pd.DataFrame(rows)
-            .set_index("node")
-        )
+        return (pd.DataFrame(rows).set_index("node"))
     

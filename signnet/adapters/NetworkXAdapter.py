@@ -19,10 +19,15 @@ class NetworkXAdapter:
 
         G = nx.DiGraph() if network.directed else nx.Graph()
 
-        return nx.from_pandas_edgelist(
+        nx.from_pandas_edgelist(
             network.edges,
             source='source',
             target='target',
             edge_attr=True,
             create_using=G
         )
+
+        # add nodes which are not connected to the network but are part of the network
+        G.add_nodes_from(network.nodes) 
+
+        return G

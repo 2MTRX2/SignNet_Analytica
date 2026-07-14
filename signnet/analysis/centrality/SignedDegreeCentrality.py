@@ -58,7 +58,7 @@ class SignedDegreeCentrality(CentralityMeasure):
             
             # G[node] delivers all unique neighbors of the node in the undirected graph.
             if node in G:
-                for _, attr in G[node].items():
+                for key, attr in G[node].items():
                     sign = attr.get('sign', 0)
                     if sign > 0:
                         pos_count += 1
@@ -73,12 +73,12 @@ class SignedDegreeCentrality(CentralityMeasure):
                     "node": node,
                     "pos_degree": pos_count,
                     "neg_degree": neg_count,
-                    "signed_degree": signed_degree,
+                    "signed_degree": signed_degree
                 }
             )
 
         # Result as a structured pandas dataframe
         results = pd.DataFrame(rows)
-        results.set_index("node", inplace=True)
+        results.set_index("node")
         
         return results

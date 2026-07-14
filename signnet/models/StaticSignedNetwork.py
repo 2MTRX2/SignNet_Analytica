@@ -3,7 +3,7 @@ import pandas as pd
 from typing import Set, List
 
 class StaticSignedNetwork:
-    """Represents the canonical in-memory representation of a signed network.
+    """Represents the canonical in-memory representation of a signed network with an edge list.
 
     The class encapsulates the network topology as a standardized edge list
     (source, target, sign) and provides read-only access to its structural
