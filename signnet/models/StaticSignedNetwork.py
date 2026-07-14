@@ -1,8 +1,8 @@
-# SignedNetwork.py
+# StaticSignedNetwork.py
 import pandas as pd
 from typing import Set, List
 
-class SignedNetwork:
+class StaticSignedNetwork:
     """Represents the canonical in-memory representation of a signed network.
 
     The class encapsulates the network topology as a standardized edge list
@@ -75,7 +75,7 @@ class SignedNetwork:
         return node in self._nodes_set
     
     def copy(self):
-        return SignedNetwork(
+        return StaticSignedNetwork(
             self._edges.copy(),
             directed=self._directed
         )

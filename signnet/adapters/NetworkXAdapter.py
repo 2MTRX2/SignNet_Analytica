@@ -1,7 +1,7 @@
 # NetworkXAdapter.py
 import networkx as nx
 
-from models.SignedNetwork import SignedNetwork
+from signnet.models.StaticSignedNetwork import StaticSignedNetwork
 
 
 class NetworkXAdapter:
@@ -15,7 +15,7 @@ class NetworkXAdapter:
 
 
     @staticmethod
-    def to_networkx(network: SignedNetwork) -> nx.Graph:
+    def to_networkx(network: StaticSignedNetwork) -> nx.Graph:
 
         G = nx.DiGraph() if network.directed else nx.Graph()
 

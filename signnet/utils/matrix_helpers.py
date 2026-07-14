@@ -1,4 +1,4 @@
-# utils.py
+# matrix_helpers.py
 import pandas as pd
 
 def transform_matrix_to_edgelist(

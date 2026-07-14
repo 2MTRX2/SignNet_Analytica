@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from .CentralityMeasure import CentralityMeasure
-from models.SignedNetwork import SignedNetwork
+from signnet.models.StaticSignedNetwork import StaticSignedNetwork
 from utils.matrix_factory import MatrixFactory
 
 class PnCentrality(CentralityMeasure):
@@ -23,7 +23,7 @@ class PnCentrality(CentralityMeasure):
     This implementation utilizes NumPy for highly optimized matrix operations.
     """
 
-    def compute(self, network: SignedNetwork) -> pd.DataFrame:
+    def compute(self, network: StaticSignedNetwork) -> pd.DataFrame:
         """Computes the PN-Centrality vector and returns a structured DataFrame.
 
         Args:
