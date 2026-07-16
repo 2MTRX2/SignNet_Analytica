@@ -9,8 +9,7 @@ from utils.matrix_factory import MatrixFactory
 class PnCentrality(CentralityMeasure):
     """
     Implements the PN-centrality proposed by
-
-        Everett & Borgatti (2014)
+    Everett & Borgatti (2014)
 
     PN = (I - α Ã)^(-1) 1
 
