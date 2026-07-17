@@ -14,6 +14,10 @@ class CentralityMeasure(ABC):
     All new centrality measures developed within the chair must inherit from this 
     class and implement 'compute' method.
     """
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        pass
 
     @abstractmethod
     def compute(self, network: SignedNetwork):

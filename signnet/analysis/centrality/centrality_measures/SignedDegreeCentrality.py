@@ -33,6 +33,10 @@ class SignedDegreeCentrality(CentralityMeasure):
             raise ValueError("beta must be greater than zero.")
         self.beta = beta
 
+    @property
+    def name(self) -> str:
+        return "Signed Degree"
+
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         """Computes the signed degree metrics and returns them as a structured DataFrame.
 

@@ -34,6 +34,10 @@ class PiiCentrality(CentralityMeasure):
         self.beta = beta
         self.max_distance = max_distance
 
+    @property
+    def name(self) -> str:
+        return "PII"
+
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
 
         if network.directed:

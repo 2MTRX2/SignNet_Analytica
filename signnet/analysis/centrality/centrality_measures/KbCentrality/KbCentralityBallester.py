@@ -18,6 +18,9 @@ class KbCentralityBallester(BaseKatzBonacich):
     
     This implementation utilizes NumPy for highly optimized matrix operations.
     """
+    @property
+    def name(self) -> str:
+        return "K-B (Ballester)"
     
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         A, delta, matrix_to_invert = self._prepare_core_system(network)

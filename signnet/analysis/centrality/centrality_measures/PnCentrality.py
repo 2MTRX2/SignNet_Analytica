@@ -21,6 +21,9 @@ class PnCentrality(CentralityMeasure):
     
     This implementation utilizes NumPy for highly optimized matrix operations.
     """
+    @property
+    def name(self) -> str:
+        return "PN"
 
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         """Computes the PN-Centrality vector and returns a structured DataFrame.
