@@ -1,7 +1,7 @@
 # CentralityMeasure.py
 from abc import ABC, abstractmethod
 
-from signnet.models.StaticSignedNetwork import StaticSignedNetwork
+from signnet.models.StaticSignedNetwork import SignedNetwork
 
 class CentralityMeasure(ABC):
     """Abstract base class defining the uniform interface for all centrality algorithms.
@@ -16,7 +16,7 @@ class CentralityMeasure(ABC):
     """
 
     @abstractmethod
-    def compute(self, network: StaticSignedNetwork):
+    def compute(self, network: SignedNetwork):
         """Executes the centrality calculation for the given signed network.
 
         Args:

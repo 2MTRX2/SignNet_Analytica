@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from signnet.models.StaticSignedNetwork import StaticSignedNetwork
+from signnet.models.StaticSignedNetwork import SignedNetwork
 
 
 class MatrixFactory:
@@ -14,7 +14,7 @@ class MatrixFactory:
     """
 
     @staticmethod
-    def adjacency(network: StaticSignedNetwork) -> np.ndarray:
+    def adjacency(network: SignedNetwork) -> np.ndarray:
         """Returns the signed adjacency matrix.
 
         Entries:
@@ -29,7 +29,7 @@ class MatrixFactory:
         )
 
     @staticmethod
-    def positive(network: StaticSignedNetwork) -> np.ndarray:
+    def positive(network: SignedNetwork) -> np.ndarray:
         """Returns the positive adjacency matrix A⁺."""
 
         return MatrixFactory._build_matrix(
@@ -39,7 +39,7 @@ class MatrixFactory:
         )
 
     @staticmethod
-    def negative(network: StaticSignedNetwork) -> np.ndarray:
+    def negative(network: SignedNetwork) -> np.ndarray:
         """Returns the negative adjacency matrix A⁻."""
 
         return MatrixFactory._build_matrix(
@@ -49,7 +49,7 @@ class MatrixFactory:
         )
 
     @staticmethod
-    def tilde(network: StaticSignedNetwork) -> np.ndarray:
+    def tilde(network: SignedNetwork) -> np.ndarray:
         """Returns the transformed matrix
 
             Ã = A⁺ − 2A⁻
@@ -65,7 +65,7 @@ class MatrixFactory:
 
     @staticmethod
     def _build_matrix(
-        network: StaticSignedNetwork,
+        network: SignedNetwork,
         positive_value: float,
         negative_value: float,
     ) -> np.ndarray:

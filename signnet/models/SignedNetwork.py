@@ -3,7 +3,7 @@ import pandas as pd
 from typing import Set, List
 from typing import Optional, Iterable
 
-class StaticSignedNetwork:
+class SignedNetwork:
     """Represents the canonical in-memory representation of a signed network with an edge list.
 
     The class encapsulates the network topology as a standardized edge list
@@ -85,7 +85,7 @@ class StaticSignedNetwork:
         return node in self._nodes_set
     
     def copy(self):
-        return StaticSignedNetwork(
+        return SignedNetwork(
             self._edges.copy(),
             directed=self._directed
         )

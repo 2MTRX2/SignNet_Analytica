@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from signnet.models.StaticSignedNetwork import StaticSignedNetwork
+from signnet.models.StaticSignedNetwork import SignedNetwork
 from .BaseKatzBonacich import BaseKatzBonacich
 
 class KbCentralityBloch(BaseKatzBonacich):
@@ -18,7 +18,7 @@ class KbCentralityBloch(BaseKatzBonacich):
     This implementation utilizes NumPy for highly optimized matrix operations.
     """
     
-    def compute(self, network: StaticSignedNetwork) -> pd.DataFrame:
+    def compute(self, network: SignedNetwork) -> pd.DataFrame:
         A, delta, matrix_to_invert = self._prepare_core_system(network)
         
         # Calculate vector of Ballester

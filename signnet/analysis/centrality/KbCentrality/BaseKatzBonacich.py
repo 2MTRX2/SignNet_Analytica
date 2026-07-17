@@ -3,13 +3,13 @@ import numpy as np
 import pandas as pd
 
 from ..CentralityMeasure import CentralityMeasure
-from signnet.models.StaticSignedNetwork import StaticSignedNetwork
+from signnet.models.StaticSignedNetwork import SignedNetwork
 from utils.matrix_factory import MatrixFactory
 
 class BaseKatzBonacich(CentralityMeasure):
     """Engine for versions of the Katz-Bonacich-based centralities."""
     
-    def _prepare_core_system(self, network: StaticSignedNetwork):
+    def _prepare_core_system(self, network: SignedNetwork):
         if network.directed:
             raise NotImplementedError("PN-centrality currently supports only undirected networks.")
             
@@ -49,7 +49,7 @@ class KbCentralityBallester(BaseKatzBonacich):
     This implementation utilizes NumPy for highly optimized matrix operations.
     """
     
-    def compute(self, network: StaticSignedNetwork) -> pd.DataFrame:
+    def compute(self, network: SignedNetwork) -> pd.DataFrame:
         A, delta, matrix_to_invert = self._prepare_core_system(network)
         rhs_vector = np.ones(network.number_of_nodes)
         
@@ -69,7 +69,7 @@ class KbCentralitySadler(BaseKatzBonacich):
     This implementation utilizes NumPy for highly optimized matrix operations.
     """
     
-    def compute(self, network: StaticSignedNetwork) -> pd.DataFrame:
+    def compute(self, network: SignedNetwork) -> pd.DataFrame:
         A, delta, matrix_to_invert = self._prepare_core_system(network)
         
         # # Calculate vector of Ballester

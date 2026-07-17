@@ -2,7 +2,7 @@
 import pandas as pd
 
 from .CentralityMeasure import CentralityMeasure
-from signnet.models.StaticSignedNetwork import StaticSignedNetwork
+from signnet.models.StaticSignedNetwork import SignedNetwork
 from adapters.NetworkXAdapter import NetworkXAdapter
 
 class SignedDegreeCentrality(CentralityMeasure):
@@ -33,7 +33,7 @@ class SignedDegreeCentrality(CentralityMeasure):
             raise ValueError("beta must be greater than zero.")
         self.beta = beta
 
-    def compute(self, network: StaticSignedNetwork) -> pd.DataFrame:
+    def compute(self, network: SignedNetwork) -> pd.DataFrame:
         """Computes the signed degree metrics and returns them as a structured DataFrame.
 
         Args:
