@@ -4,7 +4,8 @@ import pandas as pd
 
 from .CentralityMeasure import CentralityMeasure
 from signnet.models.SignedNetwork import SignedNetwork
-from utils.matrix_factory import MatrixFactory
+from signnet.utils.matrix_factory import MatrixFactory
+from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
 
 class PnCentrality(CentralityMeasure):
     """
@@ -43,6 +44,9 @@ class PnCentrality(CentralityMeasure):
         nodes = network.nodes
         number_of_nodes = network.number_of_nodes
 
+        if number_of_nodes <= 1:
+            raise ValueError("PN-centrality requires a network with at least 2 nodes to calculate alpha.")
+
         alpha = 1.0 / (2*number_of_nodes - 2)
 
         eigenvalues = np.linalg.eigvals(A_tilde)
@@ -56,9 +60,7 @@ class PnCentrality(CentralityMeasure):
 
         # apply formula: PN = (I - alpha * A_tilde)^(-1) * 1
         I = np.eye(number_of_nodes) 
-
         matrix_to_invert = I - (alpha * A_tilde)
-
         ones_vector = np.ones(number_of_nodes)
         
         try:
@@ -67,17 +69,4 @@ class PnCentrality(CentralityMeasure):
             raise ValueError("Matrix is singular and cannot be inverted.")
 
         # mapping to the pandas dataframe
-        rows = []
-
-        for node, score in zip(nodes, pn_scores):
-            rows.append(
-                {
-                    "node": node,
-                    "pn_centrality": score,
-                }
-            )
-
-        results = pd.DataFrame(rows)
-        results.set_index("node", inplace=True)
-
-        return results
+        return CentralityResultFormatter.from_array(nodes, pn_scores, self.name)

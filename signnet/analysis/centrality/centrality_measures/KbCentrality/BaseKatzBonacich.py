@@ -1,13 +1,21 @@
 # BaseKatzBonacich.py
 import numpy as np
 import pandas as pd
+from typing import Optional
 
 from ..CentralityMeasure import CentralityMeasure
 from signnet.models.SignedNetwork import SignedNetwork
-from utils.matrix_factory import MatrixFactory
+from signnet.utils.matrix_factory import MatrixFactory
+from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
 
 class BaseKatzBonacich(CentralityMeasure):
     """Engine for versions of the Katz-Bonacich-based centralities."""
+
+    def __init__(self, delta: Optional[float] = None):
+        if delta is not None and delta <= 0:
+            raise ValueError("delta must be greater than zero.")
+        self._custom_delta = delta
+        self._calculated_delta: Optional[float] = None
     
     def _prepare_core_system(self, network: SignedNetwork):
         if network.directed:
@@ -33,8 +41,4 @@ class BaseKatzBonacich(CentralityMeasure):
         return A, delta, matrix_to_invert
 
     def _to_dataframe(self, nodes, scores, column_name: str) -> pd.DataFrame:
-        rows = [{"node": node, column_name: score} for node, score in zip(nodes, scores)]
-        results = pd.DataFrame(rows)
-        results = results.set_index("node")
-        return results
-
+         return CentralityResultFormatter.from_array(nodes, scores, column_name)

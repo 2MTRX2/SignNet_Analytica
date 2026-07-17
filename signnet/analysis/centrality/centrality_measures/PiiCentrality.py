@@ -5,6 +5,7 @@ import networkx as nx
 from .CentralityMeasure import CentralityMeasure
 from adapters.NetworkXAdapter import NetworkXAdapter
 from signnet.models.SignedNetwork import SignedNetwork
+from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
 
 
 class PiiCentrality(CentralityMeasure):
@@ -95,9 +96,9 @@ class PiiCentrality(CentralityMeasure):
             rows.append(
                 {
                     "node": source,
-                    "pii_centrality": pii,
+                    self.name: pii,
                 }
             )
 
-        return (pd.DataFrame(rows).set_index("node"))
+        return CentralityResultFormatter.from_records(rows, index_column="node")
     

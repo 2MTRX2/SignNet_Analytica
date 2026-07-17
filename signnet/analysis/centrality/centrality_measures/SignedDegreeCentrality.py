@@ -4,6 +4,7 @@ import pandas as pd
 from .CentralityMeasure import CentralityMeasure
 from signnet.models.SignedNetwork import SignedNetwork
 from adapters.NetworkXAdapter import NetworkXAdapter
+from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
 
 class SignedDegreeCentrality(CentralityMeasure):
     """
@@ -81,7 +82,4 @@ class SignedDegreeCentrality(CentralityMeasure):
             )
 
         # Result as a structured pandas dataframe
-        results = pd.DataFrame(rows)
-        results = results.set_index("node")
-        
-        return results
+        return CentralityResultFormatter.from_records(rows, index_column="node")
