@@ -3,6 +3,7 @@
 import pandas as pd
 
 from .RepresentationNormaliser import RepresentationNormaliser
+from .NetworkData import NetworkData
 
 
 class EdgeListNormaliser(RepresentationNormaliser):
@@ -25,7 +26,7 @@ class EdgeListNormaliser(RepresentationNormaliser):
         self.target_col = target_col
         self.sign_col = sign_col
 
-    def to_edge_list(self, df: pd.DataFrame) -> pd.DataFrame:
+    def to_network_data(self, df: pd.DataFrame) -> NetworkData:
         """Renames and structures the DataFrame columns to match the framework's standard.
 
         Args:
@@ -47,4 +48,4 @@ class EdgeListNormaliser(RepresentationNormaliser):
         # Filter out non-existent relationships (sign == 0), identical to the Matrix strategy
         cleaned_df = cleaned_df[cleaned_df['sign'] != 0].reset_index(drop=True)
 
-        return cleaned_df
+        return NetworkData(edges=cleaned_df, nodes=None)

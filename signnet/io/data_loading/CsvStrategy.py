@@ -43,4 +43,4 @@ class CsvStrategy(DataLoadingStrategy):
 
         df = pd.read_csv(file_source)
 
-        return self.representation.to_edge_list(df)
+        return self.representation.to_network_data(df)

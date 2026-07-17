@@ -42,4 +42,4 @@ class ExcelStrategy(DataLoadingStrategy):
 
         df = pd.read_excel(file_source)
 
-        return self.representation.to_edge_list(df)
+        return self.representation.to_network_data(df)

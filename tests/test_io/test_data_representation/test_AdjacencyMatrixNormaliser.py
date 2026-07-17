@@ -38,7 +38,7 @@ class TestAdjacencyMatrixNormaliser:
         patched_transform.return_value = expected_result
  
         normaliser = AdjacencyMatrixNormaliser()
-        result = normaliser.to_edge_list(raw_df)
+        result = normaliser.to_network_data(raw_df)
  
         assert patched_transform.call_count == 1
 
@@ -60,7 +60,7 @@ class TestAdjacencyMatrixNormaliser:
         )
  
         normaliser = AdjacencyMatrixNormaliser()
-        normaliser.to_edge_list(raw_df)
+        normaliser.to_network_data(raw_df)
  
         matrix_arg = patched_transform.call_args[0][0]
         assert matrix_arg.shape == (1, 1)
@@ -82,7 +82,7 @@ class TestAdjacencyMatrixNormaliser:
         )
  
         normaliser = AdjacencyMatrixNormaliser()
-        result = normaliser.to_edge_list(raw_df)
+        result = normaliser.to_network_data(raw_df)
  
         matrix_arg = patched_transform.call_args[0][0]
         assert (matrix_arg.values == 0).all()
@@ -99,7 +99,7 @@ class TestAdjacencyMatrixNormaliser:
         )
  
         normaliser = AdjacencyMatrixNormaliser()
-        normaliser.to_edge_list(raw_df)
+        normaliser.to_network_data(raw_df)
  
         matrix_arg = patched_transform.call_args[0][0]
         assert matrix_arg.shape[1] == 0
@@ -115,7 +115,7 @@ class TestAdjacencyMatrixNormaliser:
         patched_transform.return_value = sentinel
  
         normaliser = AdjacencyMatrixNormaliser()
-        result = normaliser.to_edge_list(raw_df)
+        result = normaliser.to_network_data(raw_df)
  
         assert result is sentinel
  
@@ -135,7 +135,7 @@ class TestAdjacencyMatrixNormaliser:
         )
  
         normaliser = AdjacencyMatrixNormaliser()
-        normaliser.to_edge_list(raw_df)
+        normaliser.to_network_data(raw_df)
  
         matrix_arg = patched_transform.call_args[0][0]
         assert matrix_arg.shape == (n_nodes, n_nodes)

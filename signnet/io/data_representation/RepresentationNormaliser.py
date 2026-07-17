@@ -2,6 +2,8 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 
+from .NetworkData import NetworkData
+
 class RepresentationNormaliser(ABC):
     """Abstract base class for data representation normalisers.
 
@@ -11,7 +13,7 @@ class RepresentationNormaliser(ABC):
     """
 
     @abstractmethod
-    def to_edge_list(self, df: pd.DataFrame) -> pd.DataFrame:
+    def to_network_data(self, df: pd.DataFrame) -> NetworkData:
         """Transforms a raw input DataFrame into a standardized edge list format.
 
         This method must be overridden by any concrete subclass. The resulting 

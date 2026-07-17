@@ -1,6 +1,7 @@
 # StaticSignedNetwork.py
 import pandas as pd
 from typing import Set, List
+from typing import Optional, Iterable
 
 class StaticSignedNetwork:
     """Represents the canonical in-memory representation of a signed network with an edge list.
@@ -11,24 +12,33 @@ class StaticSignedNetwork:
     analysis components.
     """
 
-    def __init__(self, edges: pd.DataFrame, directed: bool = False):
+    def __init__(self, edges: pd.DataFrame, nodes: Optional[Iterable]=None, directed: bool = False):
         self._validate(edges)
 
         self._directed = directed
         
         # Make a copy of the dataframe edgelist and save only the relevant columns (pandas dataframe)
-        self._edges = edges[['source', 'target', 'sign']].copy().reset_index(drop=True)
+        if edges.empty:
+            self._edges = pd.DataFrame(columns=['source', 'target', 'sign'])
+        else: 
+            self._edges = edges[['source', 'target', 'sign']].copy().reset_index(drop=True)
         
         # One-time calculation of the existing nodes saved in a set and a list for quick search 
-        self._nodes_set: Set = set(self._edges["source"]) | set(self._edges["target"])
+        if nodes is None:
+            nodes = (set(edges["source"]) | set(edges["target"]))
+
+        self._nodes_set: Set = set(nodes)
         self._nodes_list: List = sorted(list(self._nodes_set))
 
     @staticmethod
-    def _validate(edges: pd.DataFrame):
+    def _validate(edges: pd.DataFrame, nodes: Optional[Iterable]):
         required = {"source", "target", "sign"}
         missing = required - set(edges.columns)
         if missing:
             raise ValueError(f"Missing required columns: {missing}")
+        
+        if edges.empty and (nodes is None or len(list(nodes)) == 0):
+            raise ValueError("Network contains no edges and no nodes.")
         
         if edges.empty:
             raise ValueError("Network contains no edges.")

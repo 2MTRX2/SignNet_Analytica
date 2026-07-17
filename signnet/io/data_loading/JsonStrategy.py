@@ -41,4 +41,4 @@ class JsonStrategy(DataLoadingStrategy):
         """
         df = pd.read_json(file_source)
 
-        return self.representation.to_edge_list(df)
+        return self.representation.to_network_data(df)
