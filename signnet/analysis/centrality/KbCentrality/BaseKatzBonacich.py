@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from ..CentralityMeasure import CentralityMeasure
-from signnet.models.StaticSignedNetwork import SignedNetwork
+from signnet.models.SignedNetwork import SignedNetwork
 from utils.matrix_factory import MatrixFactory
 
 class BaseKatzBonacich(CentralityMeasure):

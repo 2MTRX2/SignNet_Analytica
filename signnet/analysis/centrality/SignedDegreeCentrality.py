@@ -2,7 +2,7 @@
 import pandas as pd
 
 from .CentralityMeasure import CentralityMeasure
-from signnet.models.StaticSignedNetwork import SignedNetwork
+from signnet.models.SignedNetwork import SignedNetwork
 from adapters.NetworkXAdapter import NetworkXAdapter
 
 class SignedDegreeCentrality(CentralityMeasure):

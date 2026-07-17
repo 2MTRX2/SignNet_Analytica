@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from signnet.models.StaticSignedNetwork import SignedNetwork
+from signnet.models.SignedNetwork import SignedNetwork
 
 
 class MatrixFactory:

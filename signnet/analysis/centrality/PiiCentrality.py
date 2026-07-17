@@ -4,7 +4,7 @@ import networkx as nx
 
 from .CentralityMeasure import CentralityMeasure
 from adapters.NetworkXAdapter import NetworkXAdapter
-from signnet.models.StaticSignedNetwork import SignedNetwork
+from signnet.models.SignedNetwork import SignedNetwork
 
 
 class PiiCentrality(CentralityMeasure):

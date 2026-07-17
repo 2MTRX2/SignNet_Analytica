@@ -1,7 +1,7 @@
 # NetworkXAdapter.py
 import networkx as nx
 
-from signnet.models.StaticSignedNetwork import SignedNetwork
+from signnet.models.SignedNetwork import SignedNetwork
 
 
 class NetworkXAdapter:

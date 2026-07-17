@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from signnet.models.StaticSignedNetwork import SignedNetwork
+from signnet.models.SignedNetwork import SignedNetwork
 from .BaseKatzBonacich import BaseKatzBonacich
 
 class KbCentralityBallester(BaseKatzBonacich):
