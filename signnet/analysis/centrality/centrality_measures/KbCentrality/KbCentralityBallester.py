@@ -20,11 +20,11 @@ class KbCentralityBallester(BaseKatzBonacich):
     """
     @property
     def name(self) -> str:
-        return "K-B (Ballester)"
+        return "K-B (Ballester, t=0)"
     
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         A, delta, matrix_to_invert = self._prepare_core_system(network)
         rhs_vector = np.ones(network.number_of_nodes)
         
         scores = np.linalg.solve(matrix_to_invert, rhs_vector)
-        return self._to_dataframe(network.nodes, scores, "kb_centrality_ballester")
+        return self._to_dataframe(network.nodes, scores, self.name)

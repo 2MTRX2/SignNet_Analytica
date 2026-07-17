@@ -19,7 +19,7 @@ class KbCentralityBloch(BaseKatzBonacich):
     """
     @property
     def name(self) -> str:
-        return "K-B (Bloch)"
+        return "K-B (Bloch, t=1 with d=t)"
     
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         A, delta, matrix_to_invert = self._prepare_core_system(network)
@@ -30,4 +30,4 @@ class KbCentralityBloch(BaseKatzBonacich):
         
         # transformation to Bloch
         c_scores = delta * (A @ b_scores)
-        return self._to_dataframe(network.nodes, c_scores, "kb_centrality_bloch")
+        return self._to_dataframe(network.nodes, c_scores, self.name)

@@ -19,7 +19,7 @@ class KbCentralitySadler(BaseKatzBonacich):
     """
     @property
     def name(self) -> str:
-        return "K-B (Sadler)"
+        return "K-B (Sadler, t=1 with d=t-1)"
     
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         A, delta, matrix_to_invert = self._prepare_core_system(network)
@@ -30,4 +30,4 @@ class KbCentralitySadler(BaseKatzBonacich):
         
         # transformation to Sadler
         c_sadler_scores = A @ b_scores
-        return self._to_dataframe(network.nodes, c_sadler_scores, "kb_centrality_sadler")
+        return self._to_dataframe(network.nodes, c_sadler_scores, self.name)

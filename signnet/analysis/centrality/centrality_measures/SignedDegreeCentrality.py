@@ -35,7 +35,7 @@ class SignedDegreeCentrality(CentralityMeasure):
 
     @property
     def name(self) -> str:
-        return "Signed Degree"
+        return f"Signed Degree (β={self.beta})"
 
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         """Computes the signed degree metrics and returns them as a structured DataFrame.
@@ -69,20 +69,19 @@ class SignedDegreeCentrality(CentralityMeasure):
                     elif sign < 0:
                         neg_count += 1
             
-
             signed_degree = pos_count - (self.beta * neg_count)
             
             rows.append(
                 {
                     "node": node,
-                    "pos_degree": pos_count,
-                    "neg_degree": neg_count,
-                    "signed_degree": signed_degree
+                    f"pos_degree (β={self.beta})": pos_count,
+                    f"neg_degree (β={self.beta})": neg_count,
+                    self.name: signed_degree
                 }
             )
 
         # Result as a structured pandas dataframe
         results = pd.DataFrame(rows)
-        results.set_index("node")
+        results = results.set_index("node")
         
         return results
