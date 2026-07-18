@@ -1,7 +1,7 @@
 # CsvStrategy.py
 import pandas as pd
 
-from .DataLoadingStrategy import DataLoadingStrategy
+from signnet.io.data_loading.DataLoadingStrategy import DataLoadingStrategy
 from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
 
 class CsvStrategy(DataLoadingStrategy):

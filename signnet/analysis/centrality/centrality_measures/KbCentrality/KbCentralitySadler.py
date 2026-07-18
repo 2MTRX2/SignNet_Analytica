@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 from signnet.models.SignedNetwork import SignedNetwork
-from .BaseKatzBonacich import BaseKatzBonacich
+from signnet.analysis.centrality.centrality_measures.KbCentrality.BaseKatzBonacich import BaseKatzBonacich
 
 class KbCentralitySadler(BaseKatzBonacich):
     """

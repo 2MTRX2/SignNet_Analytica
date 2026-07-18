@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 
-from .NetworkData import NetworkData
+from signnet.io.data_representation.NetworkData import NetworkData
 
 class RepresentationNormaliser(ABC):
     """Abstract base class for data representation normalisers.

@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-from models.SignedNetwork import SignedNetwork
+from signnet.models.SignedNetwork import SignedNetwork
 
 
 def network_summary(network: SignedNetwork):

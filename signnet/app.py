@@ -2,18 +2,18 @@
 import streamlit as st
 
 # Data Representation
-from io.data_representation.EdgeListNormaliser import EdgeListNormaliser
-from io.data_representation.AdjacencyMatrixNormaliser import AdjacencyMatrixNormaliser
+from signnet.io.data_representation.EdgeListNormaliser import EdgeListNormaliser
+from signnet.io.data_representation.AdjacencyMatrixNormaliser import AdjacencyMatrixNormaliser
 
 # Data Loading Strategies
-from io.data_loading.CsvStrategy import CsvStrategy
-from io.data_loading.ExcelStrategy import ExcelStrategy
-from io.data_loading.JsonStrategy import JsonStrategy
+from signnet.io.data_loading.CsvStrategy import CsvStrategy
+from signnet.io.data_loading.ExcelStrategy import ExcelStrategy
+from signnet.io.data_loading.JsonStrategy import JsonStrategy
 
 # Models & UI
-from models.SignedNetwork import SignedNetwork
-from ui.components.file_upload import file_upload
-from ui.pages.centrality_page import show as show_centrality_page
+from signnet.models.SignedNetwork import SignedNetwork
+from signnet.ui.components.file_upload import file_upload
+from signnet.ui.pages.centrality_page import show as show_centrality_page
 
 
 @st.cache_data(show_spinner="Processing and building signed network...")

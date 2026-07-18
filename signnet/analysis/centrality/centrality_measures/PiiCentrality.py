@@ -2,8 +2,8 @@
 import pandas as pd
 import networkx as nx
 
-from .CentralityMeasure import CentralityMeasure
-from adapters.NetworkXAdapter import NetworkXAdapter
+from signnet.analysis.centrality.centrality_measures.CentralityMeasure import CentralityMeasure
+from signnet.adapters.NetworkXAdapter import NetworkXAdapter
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
 

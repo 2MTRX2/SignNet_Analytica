@@ -2,8 +2,8 @@
     
 import pandas as pd
 
-from .RepresentationNormaliser import RepresentationNormaliser
-from .NetworkData import NetworkData
+from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
+from signnet.io.data_representation.NetworkData import NetworkData
 
 
 class EdgeListNormaliser(RepresentationNormaliser):

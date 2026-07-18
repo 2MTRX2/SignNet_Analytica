@@ -1,9 +1,9 @@
 # AdjacencyMatrixNormaliser
 import pandas as pd
 
-from .RepresentationNormaliser import RepresentationNormaliser
+from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
 from signnet.utils.matrix_helpers import transform_matrix_to_edgelist
-from .NetworkData import NetworkData
+from signnet.io.data_representation.NetworkData import NetworkData
 
 class AdjacencyMatrixNormaliser(RepresentationNormaliser):
     """Normalizes an adjacency matrix into the framework's canonical node & edge list.

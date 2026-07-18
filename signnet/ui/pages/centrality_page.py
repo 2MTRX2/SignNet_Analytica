@@ -4,17 +4,17 @@ import streamlit as st
 
 from signnet.analysis.centrality.CentralityAnalysis import CentralityAnalysis
 
-from ui.components.centrality_selector import centrality_selector
-from ui.components.network_summary import network_summary
+from signnet.ui.components.centrality_selector import centrality_selector
+from signnet.ui.components.network_summary import network_summary
 
-from analysis.centrality.centrality_measures.SignedDegreeCentrality import SignedDegreeCentrality
-from analysis.centrality.centrality_measures.PnCentrality import PnCentrality
-from analysis.centrality.centrality_measures.PiiCentrality import PiiCentrality
-from analysis.centrality.centrality_measures.KbCentrality.KbCentralityBallester import KbCentralityBallester
-from analysis.centrality.centrality_measures.KbCentrality.KbCentralityBloch import KbCentralityBloch
-from analysis.centrality.centrality_measures.KbCentrality.KbCentralitySadler import KbCentralitySadler
+from signnet.analysis.centrality.centrality_measures.SignedDegreeCentrality import SignedDegreeCentrality
+from signnet.analysis.centrality.centrality_measures.PnCentrality import PnCentrality
+from signnet.analysis.centrality.centrality_measures.PiiCentrality import PiiCentrality
+from signnet.analysis.centrality.centrality_measures.KbCentrality.KbCentralityBallester import KbCentralityBallester
+from signnet.analysis.centrality.centrality_measures.KbCentrality.KbCentralityBloch import KbCentralityBloch
+from signnet.analysis.centrality.centrality_measures.KbCentrality.KbCentralitySadler import KbCentralitySadler
 
-from models.SignedNetwork import SignedNetwork
+from signnet.models.SignedNetwork import SignedNetwork
 
 
 def show(network: SignedNetwork):

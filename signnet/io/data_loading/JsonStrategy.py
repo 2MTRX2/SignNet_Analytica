@@ -1,7 +1,7 @@
 import pandas as pd
 
-from .DataLoadingStrategy import DataLoadingStrategy
-from io.data_representation.RepresentationNormaliser import RepresentationNormaliser
+from signnet.io.data_loading.DataLoadingStrategy import DataLoadingStrategy
+from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
 
 class JsonStrategy(DataLoadingStrategy):
     """Concrete data loading strategy for JSON files.
