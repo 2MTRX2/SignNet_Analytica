@@ -9,6 +9,7 @@ from signnet.io.data_representation.AdjacencyMatrixNormaliser import AdjacencyMa
 from signnet.io.data_loading.CsvStrategy import CsvStrategy
 from signnet.io.data_loading.ExcelStrategy import ExcelStrategy
 from signnet.io.data_loading.JsonStrategy import JsonStrategy
+from signnet.io.DatasetRegistry import DatasetRegistry
 
 # Models & UI
 from signnet.models.SignedNetwork import SignedNetwork
@@ -70,13 +71,40 @@ def main():
     # Vorbereitung für die Zukunft: Auswahl der Input-Methode
     input_method = st.radio(
         "Select Data Source",
-        ["Upload File", "Predefined Dataset (Not implemented yet)"],
+        ["Upload File", "Predefined Dataset"],
         horizontal=True
     )
 
     network = None
 
-    if input_method == "Upload File":
+    if input_method == "Predefined Dataset":
+        available_datasets = DatasetRegistry.get_available_names()
+        selected_dataset_name = st.selectbox("Choose a sample dataset to test:", available_datasets)
+        
+        dataset_info = DatasetRegistry.get_info(selected_dataset_name)
+        st.caption(f"**Description:** {dataset_info.description}")
+        st.caption(f"**Format:** {dataset_info.representation_type} ({dataset_info.file_type})")
+
+        try:
+            file_path = DatasetRegistry.get_file_path(selected_dataset_name)
+            
+            with open(file_path, "rb") as file_buffer:
+                unique_cache_key = f"predefined_{dataset_info.filename}_{dataset_info.representation_type}"
+
+                network = load_and_build_network(
+                    file_buffer=file_buffer,
+                    file_type=dataset_info.file_type,
+                    representation_type=dataset_info.representation_type,
+                    is_directed=False, 
+                    source_col='source', 
+                    target_col='target',
+                    sign_col='sign'
+                )
+        except Exception as ex:
+            st.error(f"Failed to load predefined network:\n\n{ex}")
+            return
+
+    elif input_method == "Upload File":
         config = file_upload()
 
         if config is not None:

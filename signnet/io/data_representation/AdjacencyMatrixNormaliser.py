@@ -32,7 +32,13 @@ class AdjacencyMatrixNormaliser(RepresentationNormaliser):
                 'source', 'target', and 'sign' columns.
         """
         matrix = df.set_index(df.columns[0])
+
+        matrix.index = matrix.index.astype(str)
+
         all_nodes = list(matrix.index)
+
+        matrix.columns = all_nodes
+
         # deletes the first index column also in the header
         matrix = matrix[all_nodes] 
         edges_df = transform_matrix_to_edgelist(matrix, directed=self.directed)
