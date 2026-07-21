@@ -24,6 +24,7 @@ def file_upload() -> Optional[FileUploadConfig]:
     uploaded_file = st.file_uploader(
         "Choose a network file (Drag & Drop or click Browse)",
         type=["csv", "xlsx", "xls", "json"],
+        accept_multiple_files=False
     )
 
     if uploaded_file is None:

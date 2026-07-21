@@ -113,9 +113,9 @@ def main():
                 default_sgn_idx = 2 if len(available_cols) > 2 else 0
                 
                 col1, col2, col3 = st.columns(3)
-                with col1: source_name = st.selectbox("Source Spalte:", available_cols, index=default_src_idx, key="src_sel")
-                with col2: target_name = st.selectbox("Target Spalte:", available_cols, index=default_tgt_idx, key="tgt_sel")
-                with col3: sign_name = st.selectbox("Sign/Value Spalte:", available_cols, index=default_sgn_idx, key="sgn_sel")
+                with col1: source_name = st.selectbox("Source Column:", available_cols, index=default_src_idx, key="src_sel")
+                with col2: target_name = st.selectbox("Target Column:", available_cols, index=default_tgt_idx, key="tgt_sel")
+                with col3: sign_name = st.selectbox("Sign/Value Column:", available_cols, index=default_sgn_idx, key="sgn_sel")
 
                 if not st.button("Process Network Architecture"):
                     proceed_with_loading = False
