@@ -14,6 +14,7 @@ from signnet.io.data_loading.JsonStrategy import JsonStrategy
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.ui.components.file_upload import file_upload
 from signnet.ui.pages.centrality_page import show as show_centrality_page
+from signnet.analysis.graph.GraphBuilder import create_graphical_signed_network
 
 
 @st.cache_data(show_spinner="Processing and building signed network...")
@@ -168,6 +169,7 @@ def main():
     st.header("2. Centrality Analysis")
 
     if network is not None:
+        create_graphical_signed_network(network)
         show_centrality_page(network)
     else:
         st.info("Waiting for a valid network to be loaded in Section 1...")
