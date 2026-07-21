@@ -39,6 +39,9 @@ class EdgeListNormaliser(RepresentationNormaliser):
         # Create a copy to prevent modifying the original DataFrame in-place
         cleaned_df = df.copy()
 
+        # Ensures that no misplaced whitespaces or other indicators occur
+        cleaned_df.columns = cleaned_df.columns.astype(str).str.strip().str.replace('\ufeff', '', regex=False)
+
         # Select and reorder only the relevant columns based on the mapping
         cleaned_df = cleaned_df[[self.source_col, self.target_col, self.sign_col]]
 
