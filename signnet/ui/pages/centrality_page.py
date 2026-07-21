@@ -95,7 +95,7 @@ def show(network: SignedNetwork):
                 pii_beta = st.slider(
                     "Beta (PII)", 
                     min_value=-1.0, 
-                    max_value=0, 
+                    max_value=0.0, 
                     value=-0.25, 
                     step=0.05
                 )
@@ -142,7 +142,7 @@ def show(network: SignedNetwork):
     if st.button("Run Analysis", type="primary"):
         # Wrap execution in a native spinner for complex network operations
         with st.spinner("Calculating selected metrics..."):
-            analysis = CentralityAnalysis(selected_measures)
+            analysis = CentralityAnalysis(measures=list(selected_measures.values()))
             # Store calculated DataFrame safely inside the user session
             st.session_state[state_key] = analysis.compute(network)
 
