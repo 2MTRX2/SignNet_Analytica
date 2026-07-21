@@ -71,10 +71,7 @@ def file_upload() -> Optional[FileUploadConfig]:
         "Directed network",
         value=False,
     )
-
-    if directed:
-        st.warning("Directed networks have not been implemented yet.")
-        st.stop()
+    
 
     return FileUploadConfig(
         file=uploaded_file,

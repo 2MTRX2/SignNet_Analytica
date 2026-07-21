@@ -79,6 +79,11 @@ def main():
         config = file_upload()
 
         if config is not None:
+            if config.directed:
+                st.warning("Directed networks have not been implemented yet. Please untick 'Directed network' to proceed.")
+                st.session_state.network_processed = False
+                st.stop()
+
             # Validations
             if config.representation not in ["Edge List", "Adjacency Matrix"]:
                 st.error(f"Unsupported network representation: {config.representation}")
@@ -108,13 +113,24 @@ def main():
                 default_src_idx = 0 if len(available_cols) > 0 else 0
                 default_tgt_idx = 1 if len(available_cols) > 1 else 0
                 default_sgn_idx = 2 if len(available_cols) > 2 else 0
+
+                def reset_network_processed():
+                    st.session_state.network_processed = False
                 
                 col1, col2, col3 = st.columns(3)
-                with col1: source_name = st.selectbox("Source Column:", available_cols, index=default_src_idx, key="src_sel")
-                with col2: target_name = st.selectbox("Target Column:", available_cols, index=default_tgt_idx, key="tgt_sel")
-                with col3: sign_name = st.selectbox("Sign/Value Column:", available_cols, index=default_sgn_idx, key="sgn_sel")
+                with col1: source_name = st.selectbox("Source Column:", available_cols, index=default_src_idx, key="src_sel_key", on_change=reset_network_processed)
+                with col2: target_name = st.selectbox("Target Column:", available_cols, index=default_tgt_idx, key="tgt_sel_key", on_change=reset_network_processed)
+                with col3: sign_name = st.selectbox("Sign/Value Column:", available_cols, index=default_sgn_idx, key="sgn_sel_key", on_change=reset_network_processed)
 
-                if not st.button("Process Network Architecture"):
+                if "network_processed" not in st.session_state:
+                    st.session_state.network_processed = False
+
+                if st.button("Process Network Architecture"):
+                    st.session_state.network_processed = True
+
+                if st.session_state.network_processed:
+                    proceed_with_loading = True
+                else:
                     proceed_with_loading = False
                     st.info("Click the button above to calculate the network metrics with the selected columns.")
 
