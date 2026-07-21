@@ -33,7 +33,7 @@ def load_and_build_network(
     if representation_type == "Edge List":
         representation = EdgeListNormaliser(source_col=source_col, target_col=target_col, sign_col=sign_col)
     elif representation_type == "Adjacency Matrix":
-        representation = AdjacencyMatrixNormaliser()
+        representation = AdjacencyMatrixNormaliser(directed=is_directed)
     else:
         raise ValueError(f"Unsupported network representation: {representation_type}")
 
@@ -91,8 +91,6 @@ def main():
             proceed_with_loading = True
 
             if config.representation == "Edge List":
-                # Temporären Dummy-Normaliser erstellen, nur um an die Spaltennamen zu kommen
-                # Da config.file ein Buffer ist, nutzen wir eine temporäre Strategie für read_raw
                 temp_rep = EdgeListNormaliser()
                 if config.file_type.lower() == "csv":
                     temp_loader = CsvStrategy(temp_rep)
@@ -101,7 +99,6 @@ def main():
                 else:
                     temp_loader = JsonStrategy(temp_rep)
 
-                # Rohe Spalten auslesen (wird gecached im Loader-Instanz-Objekt)
                 df_raw = temp_loader.read_raw(config.file)
                 available_cols = list(df_raw.columns)
 
@@ -133,7 +130,7 @@ def main():
                         file_type=config.file_type,
                         representation_type=config.representation,
                         is_directed=config.directed,
-                        source_col=source_name,  # Übergabe der sauberen String-Variablen
+                        source_col=source_name, 
                         target_col=target_name,
                         sign_col=sign_name
                     )

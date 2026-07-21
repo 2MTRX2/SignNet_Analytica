@@ -55,13 +55,16 @@ def file_upload() -> Optional[FileUploadConfig]:
     if file_type == "Select format...":
         st.warning("Please specify the correct file format for this network.")
         return None
+    
+    options = ["Edge List", "Adjacency Matrix"]
+    current_cached_type = st.session_state.get("representation_type_key", "Edge List")
+    default_index = options.index(current_cached_type) if current_cached_type in options else 0
 
     representation = st.radio(
-        "Network representation",
-        [
-            "Edge List",
-            "Adjacency Matrix",
-        ],
+        "Select Network Representation: ",
+        options=options,
+        index=default_index,          # <-- Das ist die magische Zeile!
+        key="representation_type_key" # Koppelt das Widget an den Session State
     )
 
     directed = st.checkbox(

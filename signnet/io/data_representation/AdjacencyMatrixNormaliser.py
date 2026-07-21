@@ -16,6 +16,10 @@ class AdjacencyMatrixNormaliser(RepresentationNormaliser):
     - A value of 0 indicates that no edge exists.
     """
 
+    def __init__(self, directed: bool = False):
+        """Initializes the normaliser with network directionality."""
+        self.directed = directed
+
     def to_network_data(self, df) -> NetworkData:
         """Transforms a raw adjacency matrix DataFrame into a standardized node & edge list.
 
@@ -31,6 +35,6 @@ class AdjacencyMatrixNormaliser(RepresentationNormaliser):
         all_nodes = list(matrix.index)
         # deletes the first index column also in the header
         matrix = matrix[all_nodes] 
-        edges_df = transform_matrix_to_edgelist(matrix)
+        edges_df = transform_matrix_to_edgelist(matrix, directed=self.directed)
 
         return NetworkData(edges=edges_df, nodes=all_nodes)
