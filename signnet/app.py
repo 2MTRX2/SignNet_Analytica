@@ -21,14 +21,17 @@ def load_and_build_network(
     file_buffer, 
     file_type: str, 
     representation_type: str, 
-    is_directed: bool
+    is_directed: bool, 
+    source_col: str = 'source',  
+    target_col: str = 'target',
+    sign_col: str = 'sign'
 ) -> SignedNetwork:
     """
     Selects the appropriate file strategy and normaliser dynamically.
     Caches the resulting SignedNetwork to ensure high performance.
     """
     if representation_type == "Edge List":
-        representation = EdgeListNormaliser()
+        representation = EdgeListNormaliser(source_col=source_col, target_col=target_col, sign_col=sign_col)
     elif representation_type == "Adjacency Matrix":
         representation = AdjacencyMatrixNormaliser()
     else:
@@ -83,18 +86,60 @@ def main():
             if config.file_type not in ["CSV", "Excel", "JSON"]:
                 st.error(f"Unsupported file format: {config.file_type}")
                 return
+            
+            source_name, target_name, sign_name = 'source', 'target', 'sign'
+            proceed_with_loading = True
+
+            if config.representation == "Edge List":
+                # Temporären Dummy-Normaliser erstellen, nur um an die Spaltennamen zu kommen
+                # Da config.file ein Buffer ist, nutzen wir eine temporäre Strategie für read_raw
+                temp_rep = EdgeListNormaliser()
+                if config.file_type.lower() == "csv":
+                    temp_loader = CsvStrategy(temp_rep)
+                elif config.file_type.lower() == "excel":
+                    temp_loader = ExcelStrategy(temp_rep)
+                else:
+                    temp_loader = JsonStrategy(temp_rep)
+
+                # Rohe Spalten auslesen (wird gecached im Loader-Instanz-Objekt)
+                df_raw = temp_loader.read_raw(config.file)
+                available_cols = list(df_raw.columns)
+
+                st.subheader("Column Mapping")
+                st.info("Please assign the file columns to the network roles:")
+
+                default_src_idx = 0 if len(available_cols) > 0 else 0
+                default_tgt_idx = 1 if len(available_cols) > 1 else 0
+                default_sgn_idx = 2 if len(available_cols) > 2 else 0
+                
+                col1, col2, col3 = st.columns(3)
+                with col1: source_name = st.selectbox("Source Spalte:", available_cols, index=default_src_idx, key="src_sel")
+                with col2: target_name = st.selectbox("Target Spalte:", available_cols, index=default_tgt_idx, key="tgt_sel")
+                with col3: sign_name = st.selectbox("Sign/Value Spalte:", available_cols, index=default_sgn_idx, key="sgn_sel")
+
+                if not st.button("Process Network Architecture"):
+                    proceed_with_loading = False
+                    st.info("Click the button above to calculate the network metrics with the selected columns.")
 
             # Load the network from uploaded file
-            try:
-                network = load_and_build_network(
-                    file_buffer=config.file,
-                    file_type=config.file_type,
-                    representation_type=config.representation,
-                    is_directed=config.directed
-                )
-            except Exception as ex:
-                st.error(f"Failed to load network:\n\n{ex}")
-                return
+            if proceed_with_loading:
+                try:
+                    # Streamlit buffer gets reset
+                    if hasattr(config.file, "seek"):
+                        config.file.seek(0)
+
+                    network = load_and_build_network(
+                        file_buffer=config.file,
+                        file_type=config.file_type,
+                        representation_type=config.representation,
+                        is_directed=config.directed,
+                        source_col=source_name,  # Übergabe der sauberen String-Variablen
+                        target_col=target_name,
+                        sign_col=sign_name
+                    )
+                except Exception as ex:
+                    st.error(f"Failed to load network:\n\n{ex}")
+                    return
         else:
             st.info("Please upload a network file above to begin the analysis.")
 

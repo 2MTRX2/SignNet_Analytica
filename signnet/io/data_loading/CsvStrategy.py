@@ -3,6 +3,7 @@ import pandas as pd
 
 from signnet.io.data_loading.DataLoadingStrategy import DataLoadingStrategy
 from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
+from signnet.io.data_representation.NetworkData import NetworkData
 
 class CsvStrategy(DataLoadingStrategy):
     """Concrete data loading strategy for CSV files.
@@ -24,8 +25,21 @@ class CsvStrategy(DataLoadingStrategy):
                 the `to_edge_list(df)` method.
         """
         self.representation = representation
+        self._cached_df = None
 
-    def load(self, file_source) -> pd.DataFrame:
+    def read_raw(self, file_source) -> pd.DataFrame:
+        """This method reads the CSV file into a raw pandas DataFrame."""
+
+        if self._cached_df is None:
+            df = pd.read_csv(file_source, sep=None, engine='python')
+
+            df.columns = df.columns.astype(str).str.strip().str.replace('\ufeff', '', regex=False)
+
+            self._cached_df = df
+
+        return self._cached_df
+
+    def load(self, file_source) -> NetworkData:
         """Loads a CSV file and converts it into a standardised edge list DataFrame.
 
         This method reads the CSV file into a raw pandas DataFrame and passes it 
@@ -41,6 +55,6 @@ class CsvStrategy(DataLoadingStrategy):
                 the network connections and their respective signs.
         """
 
-        df = pd.read_csv(file_source, sep=None, engine='python')
+        df = self.read_raw(file_source)
 
         return self.representation.to_network_data(df)
