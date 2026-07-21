@@ -41,6 +41,6 @@ class CsvStrategy(DataLoadingStrategy):
                 the network connections and their respective signs.
         """
 
-        df = pd.read_csv(file_source)
+        df = pd.read_csv(file_source, sep=None, engine='python')
 
         return self.representation.to_network_data(df)

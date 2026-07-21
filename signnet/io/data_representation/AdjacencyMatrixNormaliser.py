@@ -29,6 +29,8 @@ class AdjacencyMatrixNormaliser(RepresentationNormaliser):
         """
         matrix = df.set_index(df.columns[0])
         all_nodes = list(matrix.index)
+        # deletes the first index column also in the header
+        matrix = matrix[all_nodes] 
         edges_df = transform_matrix_to_edgelist(matrix)
 
         return NetworkData(edges=edges_df, nodes=all_nodes)

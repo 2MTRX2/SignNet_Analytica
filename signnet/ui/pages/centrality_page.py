@@ -73,7 +73,7 @@ def show(network: SignedNetwork):
 
     # Only render the parameter configuration block if a configurable measure is active
     if "Signed Degree" in selected_names or "PII Centrality" in selected_names:
-        st.subheader("2. Configure Parameters")
+        st.subheader("Configure Parameters")
         
         # Split layout into columns for clean visual alignment side-by-side
         col1, col2 = st.columns(2)
