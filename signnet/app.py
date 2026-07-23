@@ -1,56 +1,10 @@
 # app.py
 import streamlit as st
 
-# Data Representation
-from signnet.io.data_representation.EdgeListNormaliser import EdgeListNormaliser
-from signnet.io.data_representation.AdjacencyMatrixNormaliser import AdjacencyMatrixNormaliser
-
-# Data Loading Strategies
-from signnet.io.data_loading.CsvStrategy import CsvStrategy
-from signnet.io.data_loading.ExcelStrategy import ExcelStrategy
-from signnet.io.data_loading.JsonStrategy import JsonStrategy
-from signnet.io.DatasetRegistry import DatasetRegistry
-
-# Models & UI
-from signnet.models.SignedNetwork import SignedNetwork
-from signnet.ui.components.file_upload import file_upload
 from signnet.ui.pages.centrality_page import show as show_centrality_page
+from signnet.ui.components.predefined_dataset_selector import predefined_dataset_selector
+from signnet.ui.components.uploaded_network_selector import uploaded_network_selector
 from signnet.analysis.graph.GraphBuilder import create_graphical_signed_network
-
-
-@st.cache_data(show_spinner="Processing and building signed network...")
-def load_and_build_network(
-    file_buffer, 
-    file_type: str, 
-    representation_type: str, 
-    is_directed: bool, 
-    source_col: str = 'source',  
-    target_col: str = 'target',
-    sign_col: str = 'sign'
-) -> SignedNetwork:
-    """
-    Selects the appropriate file strategy and normaliser dynamically.
-    Caches the resulting SignedNetwork to ensure high performance.
-    """
-    if representation_type == "Edge List":
-        representation = EdgeListNormaliser(source_col=source_col, target_col=target_col, sign_col=sign_col)
-    elif representation_type == "Adjacency Matrix":
-        representation = AdjacencyMatrixNormaliser(directed=is_directed)
-    else:
-        raise ValueError(f"Unsupported network representation: {representation_type}")
-
-    fmt = file_type.lower()
-    if fmt == "csv":
-        loader = CsvStrategy(representation)
-    elif fmt == "excel":
-        loader = ExcelStrategy(representation)
-    elif fmt == "json":
-        loader = JsonStrategy(representation)
-    else:
-        raise ValueError(f"Unsupported file format configuration: {file_type}")
-
-    network_data = loader.load(file_buffer)
-    return SignedNetwork(edges=network_data.edges, nodes=network_data.nodes, directed=is_directed)
 
 def main():
     """Entry point of the Streamlit application."""
@@ -68,127 +22,27 @@ def main():
     # ==================================================================
     st.header("1. Data Input")
     
-    # Vorbereitung für die Zukunft: Auswahl der Input-Methode
+    # Selection of the input method
     input_method = st.radio(
         "Select Data Source",
         ["Upload File", "Predefined Dataset"],
         horizontal=True
     )
 
+    # Ensure that the application starts with an empty network
     network = None
 
+    # Proceed with the input method of a predefined dataset
     if input_method == "Predefined Dataset":
-        available_datasets = DatasetRegistry.get_available_names()
-        selected_dataset_name = st.selectbox("Choose a sample dataset to test:", available_datasets)
-        
-        dataset_info = DatasetRegistry.get_info(selected_dataset_name)
-        st.caption(f"**Description:** {dataset_info.description}")
-        st.caption(f"**Format:** {dataset_info.representation_type} ({dataset_info.file_type})")
+        network = predefined_dataset_selector()
 
-        try:
-            file_path = DatasetRegistry.get_file_path(selected_dataset_name)
-            
-            with open(file_path, "rb") as file_buffer:
-                unique_cache_key = f"predefined_{dataset_info.filename}_{dataset_info.representation_type}"
-
-                network = load_and_build_network(
-                    file_buffer=file_buffer,
-                    file_type=dataset_info.file_type,
-                    representation_type=dataset_info.representation_type,
-                    is_directed=False, 
-                    source_col='source', 
-                    target_col='target',
-                    sign_col='sign'
-                )
-        except Exception as ex:
-            st.error(f"Failed to load predefined network:\n\n{ex}")
-            return
-
+    # Proceed with the input method of an uploaded file
     elif input_method == "Upload File":
-        config = file_upload()
+        network = uploaded_network_selector()
 
-        if config is not None:
-            if config.directed:
-                st.warning("Directed networks have not been implemented yet. Please untick 'Directed network' to proceed.")
-                st.session_state.network_processed = False
-                st.stop()
-
-            # Validations
-            if config.representation not in ["Edge List", "Adjacency Matrix"]:
-                st.error(f"Unsupported network representation: {config.representation}")
-                return
-            if config.file_type not in ["CSV", "Excel", "JSON"]:
-                st.error(f"Unsupported file format: {config.file_type}")
-                return
-            
-            source_name, target_name, sign_name = 'source', 'target', 'sign'
-            proceed_with_loading = True
-
-            if config.representation == "Edge List":
-                temp_rep = EdgeListNormaliser()
-                if config.file_type.lower() == "csv":
-                    temp_loader = CsvStrategy(temp_rep)
-                elif config.file_type.lower() == "excel":
-                    temp_loader = ExcelStrategy(temp_rep)
-                else:
-                    temp_loader = JsonStrategy(temp_rep)
-
-                df_raw = temp_loader.read_raw(config.file)
-                available_cols = list(df_raw.columns)
-
-                st.subheader("Column Mapping")
-                st.info("Please assign the file columns to the network roles:")
-
-                default_src_idx = 0 if len(available_cols) > 0 else 0
-                default_tgt_idx = 1 if len(available_cols) > 1 else 0
-                default_sgn_idx = 2 if len(available_cols) > 2 else 0
-
-                def reset_network_processed():
-                    st.session_state.network_processed = False
-                
-                col1, col2, col3 = st.columns(3)
-                with col1: source_name = st.selectbox("Source Column:", available_cols, index=default_src_idx, key="src_sel_key", on_change=reset_network_processed)
-                with col2: target_name = st.selectbox("Target Column:", available_cols, index=default_tgt_idx, key="tgt_sel_key", on_change=reset_network_processed)
-                with col3: sign_name = st.selectbox("Sign/Value Column:", available_cols, index=default_sgn_idx, key="sgn_sel_key", on_change=reset_network_processed)
-
-                if "network_processed" not in st.session_state:
-                    st.session_state.network_processed = False
-
-                if st.button("Process Network Architecture"):
-                    st.session_state.network_processed = True
-
-                if st.session_state.network_processed:
-                    proceed_with_loading = True
-                else:
-                    proceed_with_loading = False
-                    st.info("Click the button above to calculate the network metrics with the selected columns.")
-
-            # Load the network from uploaded file
-            if proceed_with_loading:
-                try:
-                    # Streamlit buffer gets reset
-                    if hasattr(config.file, "seek"):
-                        config.file.seek(0)
-
-                    network = load_and_build_network(
-                        file_buffer=config.file,
-                        file_type=config.file_type,
-                        representation_type=config.representation,
-                        is_directed=config.directed,
-                        source_col=source_name, 
-                        target_col=target_name,
-                        sign_col=sign_name
-                    )
-                except Exception as ex:
-                    st.error(f"Failed to load network:\n\n{ex}")
-                    return
-        else:
-            st.info("Please upload a network file above to begin the analysis.")
-
-    elif input_method == "Predefined Dataset (Not implemented yet)":
-        st.warning("Predefined datasets are currently under development. Please use the 'Upload File' option.")
-        # `load_predefined_network()` aufrufen
-        network = None
+    # Ensure that no not-implemented method can be chosen
+    else:
+        st.error(f"Developer Error: Input method '{input_method}' is not implemented yet.")
 
     # ==================================================================
     # SECTION 2: CENTRALITY ANALYSIS
