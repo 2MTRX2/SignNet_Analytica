@@ -24,6 +24,13 @@ class DatasetRegistry:
             representation_type="Adjacency Matrix",
             file_type="CSV",
             description="Sampsons famous network of 18 monks in a monastery. Consists of positive and negative relationships."
+        ), 
+        "Gama Network of Alliances (positive) and Conflicts (negative)": DatasetInfo(
+            name="Gama Network of Alliances",
+            filename="highlandtribes.csv",
+            representation_type="Edge List",
+            file_type="CSV",
+            description="Collected by anthropologist Kenneth Read in 1954, it documents the political and social relationships among 16 sub-tribes of the Gahuku-Gama alliance system in the Eastern Highlands of New Guinea."
         )
     }
 
