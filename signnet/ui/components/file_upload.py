@@ -3,6 +3,12 @@ from dataclasses import dataclass
 from typing import Optional
 import streamlit as st
 
+from signnet.io.LoadingRegistry import STRATEGY_REGISTRY
+from signnet.io.LoadingRegistry import EXTENSION_TO_FORMAT
+from signnet.io.LoadingRegistry import get_available_file_types
+from signnet.io.LoadingRegistry import get_available_representations
+
+
 @dataclass
 class FileUploadConfig:
     """Stores the user's file upload configuration."""
@@ -10,7 +16,6 @@ class FileUploadConfig:
     file_type: str
     representation: str
     directed: bool
-
 
 def file_upload() -> Optional[FileUploadConfig]:
     """
@@ -21,9 +26,15 @@ def file_upload() -> Optional[FileUploadConfig]:
         FileUploadConfig if a file has been selected and validated,
         otherwise None.
     """
+    allowed_extensions = list(STRATEGY_REGISTRY.keys())
+    if "excel" in allowed_extensions:
+        allowed_extensions.remove("excel")
+        allowed_extensions.extend(["xlsx", "xls"])
+
+    # input box
     uploaded_file = st.file_uploader(
         "Choose a network file (Drag & Drop or click Browse)",
-        type=["csv", "xlsx", "xls", "json"],
+        type=allowed_extensions,
         accept_multiple_files=False
     )
 
@@ -31,24 +42,21 @@ def file_upload() -> Optional[FileUploadConfig]:
         return None
 
     detected_ext = uploaded_file.name.split(".")[-1].lower()
+
+    available_formats = get_available_file_types()
+    file_type_options = ["Select format..."] + available_formats
     
-    default_index = 0 
+    target_format = EXTENSION_TO_FORMAT.get(detected_ext)
     
-    if detected_ext == "csv":
-        default_index = 1  # CSV
-    elif detected_ext in ["xlsx", "xls"]:
-        default_index = 2  # Excel
-    elif detected_ext == "json":
-        default_index = 3  # JSON
+    default_index = (
+        file_type_options.index(target_format) 
+        if target_format in file_type_options 
+        else 0
+    )
 
     file_type = st.selectbox(
         "File format",
-        [
-            "Select format...",  # Index 0
-            "CSV",               # Index 1
-            "Excel",             # Index 2
-            "JSON"               # Index 3
-        ],
+        options=file_type_options,
         index=default_index
     )
 
@@ -56,15 +64,19 @@ def file_upload() -> Optional[FileUploadConfig]:
         st.warning("Please specify the correct file format for this network.")
         return None
     
-    options = ["Edge List", "Adjacency Matrix"]
-    current_cached_type = st.session_state.get("representation_type_key", "Edge List")
-    default_index = options.index(current_cached_type) if current_cached_type in options else 0
+    representation_options = get_available_representations()
+    current_cached_type = st.session_state.get("representation_type_key", representation_options[0])
+    default_rep_index = (
+        representation_options.index(current_cached_type) 
+        if current_cached_type in representation_options 
+        else 0
+    )
 
     representation = st.radio(
         "Select Network Representation: ",
-        options=options,
-        index=default_index,          # <-- Das ist die magische Zeile!
-        key="representation_type_key" # Koppelt das Widget an den Session State
+        options=representation_options,
+        index=default_rep_index,          
+        key="representation_type_key" 
     )
 
     directed = st.checkbox(
@@ -72,11 +84,9 @@ def file_upload() -> Optional[FileUploadConfig]:
         value=False,
     )
     
-
     return FileUploadConfig(
         file=uploaded_file,
         file_type=file_type,
         representation=representation,
         directed=directed,
     )
-

@@ -23,7 +23,7 @@ def predefined_dataset_selector() -> SignedNetwork | None:
     try:
         file_path = DatasetRegistry.get_file_path(selected_dataset_name)
 
-        # Read the file with context manager so that the ressources are free up after usage
+        # Read the file with a context manager so that the resources are freed up after usage.
         # rb to read binary data
         with open(file_path, "rb") as file_buffer:
             network = load_and_build_network(

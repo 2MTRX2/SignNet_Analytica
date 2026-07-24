@@ -11,19 +11,22 @@ class DatasetInfo:
     description: str
 
 class DatasetRegistry:
-    """Registry that manages all predefined testing datasets in the framework."""
+    """Registry that manages all predefined datasets in the framework."""
 
+    # Starting point is our current file DataRegistry.py and we move outside to signnet_programming_python
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-    
+
+    # Move to the directory data
     DATA_DIR = os.path.join(BASE_DIR, "data")
-    
+
+    # Predefined Datasets
     DATASETS = {
         "Sampson Monks (Time 3)": DatasetInfo(
-            name="Sampson Monks (Time 3)",
+            name="Sampson Monks (signed, T3)",
             filename="sampson_signed_t3.csv",
             representation_type="Adjacency Matrix",
             file_type="CSV",
-            description="Sampsons famous network of 18 monks in a monastery. Consists of positive and negative relationships."
+            description="Samuel F. Sampson's famous social network dataset from 1968, capturing positive and negative relationships among 18 monks during a monastery crisis (Time 3)."
         ), 
         "Gama Network of Alliances (positive) and Conflicts (negative)": DatasetInfo(
             name="Gama Network of Alliances",
