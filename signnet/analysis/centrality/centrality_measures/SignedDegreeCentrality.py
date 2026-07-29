@@ -25,7 +25,7 @@ class SignedDegreeCentrality(CentralityMeasure):
     """
 
     PARAMETERS = [
-        ParameterSpec(name="beta", label="Beta (Signed Degree)", type="float", default=1.0, min_value=0.0, max_value=10, step=0.05),
+        ParameterSpec(name="beta", label="Beta (Signed Degree)", type="float", default=1.0, min_value=0.000001, max_value=None, step=0.05),
     ]
     
     def __init__(self, beta: float = 1.0):

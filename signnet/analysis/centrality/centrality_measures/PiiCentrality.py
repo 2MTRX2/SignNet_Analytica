@@ -26,8 +26,8 @@ class PiiCentrality(CentralityMeasure):
     """
 
     PARAMETERS = [
-        ParameterSpec(name="beta", label="Beta (PII)", type="float", default=-0.25, min_value=-1.0, max_value=0.0, step=0.05),
-        ParameterSpec(name="max_distance", label="Max Distance", type="int", default=3, min_value=1, max_value=10, step=1)
+        ParameterSpec(name="beta", label="Beta (PII)", type="float", default=-0.20, min_value=None, max_value=-0.00001, step=0.05),
+        ParameterSpec(name="max_distance", label="Max Distance", type="int", default=3, min_value=0, max_value=None, step=1)
     ]
 
     def __init__(self, beta: float, max_distance: int):
@@ -43,7 +43,7 @@ class PiiCentrality(CentralityMeasure):
 
     @property
     def name(self) -> str:
-        return "PII"
+        return f"PII (β={self.beta}, m_dist={self.max_distance}) "
 
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
 
@@ -58,8 +58,12 @@ class PiiCentrality(CentralityMeasure):
         max_degree = max(dict(G.degree()).values(), default=0)
 
         if abs(self.beta) * max_degree > 2:
+            max_allowed_beta = 2.0 / max_degree if max_degree > 0 else 2.0
+    
             raise ValueError(
-                "Constraint violated: |beta| * M must be <= 2."
+                f"PII Centrality constraint violated: |beta| * M must be <= 2. "
+                f"With a maximum node degree (M) of {max_degree}, "
+                f"beta must satisfy the condition: -{max_allowed_beta} ≤ beta < 0."
             )
 
         rows = []

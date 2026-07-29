@@ -71,26 +71,57 @@ def show(network: SignedNetwork):
                 
                 for param in measure_class.PARAMETERS:
                     if param.type == "float":
-                        val = st.slider(
-                            param.label, 
-                            min_value=float(param.min_value), 
-                            max_value=float(param.max_value), 
-                            value=float(param.default), 
-                            step=float(param.step),
-                            key=f"{name}_{param.name}"
-                        )
+                        if param.min_value is None or param.max_value is None:
+                            val = st.number_input(
+                                param.label,
+                                min_value=float(param.min_value) if param.min_value is not None else None,
+                                max_value=float(param.max_value) if param.max_value is not None else None,
+                                value=float(param.default),
+                                step=float(param.step) if param.step else 0.01,
+                                key=f"{name}_{param.name}"
+                            )
+
+                            if param.min_value is not None and val < param.min_value:
+                                st.error(f"{param.label} must be greater than or equal to {param.min_value}.")
+                            if param.max_value is not None and val > param.max_value:
+                                st.error(f"{param.label} must be less than or equal to {param.max_value}.")
+                        else:
+                        # Nur wenn beide Grenzen definiert sind, wird ein Slider gerendert
+                            val = st.slider(
+                                param.label, 
+                                min_value=float(param.min_value), 
+                                max_value=float(param.max_value), 
+                                value=float(param.default), 
+                                step=float(param.step),
+                                key=f"{name}_{param.name}"
+                            )
+                        
                     elif param.type == "int":
-                        val = st.number_input(
-                            param.label, 
-                            min_value=int(param.min_value), 
-                            max_value=int(param.max_value), 
-                            value=int(param.default), 
-                            step=int(param.step),
-                            key=f"{name}_{param.name}"
-                        )
+                        if param.min_value is None or param.max_value is None:
+                            val = st.number_input(
+                                param.label,
+                                min_value=int(param.min_value) if param.min_value is not None else None,
+                                max_value=int(param.max_value) if param.max_value is not None else None,
+                                value=int(param.default),
+                                step=int(param.step) if param.step else 1,
+                                key=f"{name}_{param.name}"
+                            )
+                            if param.min_value is not None and val < param.min_value:
+                                st.error(f"{param.label} must be greater than or equal to {param.min_value}.")
+                            if param.max_value is not None and val > param.max_value:
+                                st.error(f"{param.label} must be less than or equal to {param.max_value}.")
+                        else:
+                            val = st.slider(
+                                param.label, 
+                                min_value=int(param.min_value), 
+                                max_value=int(param.max_value), 
+                                value=int(param.default), 
+                                step=int(param.step),
+                                key=f"{name}_{param.name}"
+                            )
+
                     runtime_arguments[name][param.name] = val
 
-    
     # ------------------------------------------------------------------
     # Step 4: Map selected names to configured class instances
     # ------------------------------------------------------------------
@@ -112,10 +143,11 @@ def show(network: SignedNetwork):
 
     # Generate a unique hash key containing network instance id and all variable settings.
     # This automatically clears old results from the screen if parameters or metrics change.
-    hash_components = []
+    hash_components = [f"net_nodes_{len(network.nodes)}_edges_{len(network.edges)}"]
+    
     for name in sorted(selected_names):
         hash_components.append(name)
-        # Falls das Maß Parameter hat, fügen wir deren aktuelle UI-Werte dem Hash hinzu
+       
         if name in runtime_arguments:
             for p_name, p_val in sorted(runtime_arguments[name].items()):
                 hash_components.append(f"{p_name}:{p_val}")
@@ -125,11 +157,14 @@ def show(network: SignedNetwork):
     if st.button("Run Analysis", type="primary"):
         # Wrap execution in a native spinner for complex network operations
         with st.spinner("Calculating selected metrics..."):
-            analysis = CentralityAnalysis(measures=selected_measures)
-
-            st.session_state["active_centrality_results"] = analysis.compute(network)
- 
-            st.session_state["current_param_hash"] = expected_state_key
+            try:
+                analysis = CentralityAnalysis(measures=selected_measures)
+                st.session_state["active_centrality_results"] = analysis.compute(network)
+                st.session_state["current_param_hash"] = expected_state_key
+            except ValueError as val_ex:
+                st.error(f"Mathematical Constraint Error:\n\n{val_ex}")
+            except Exception as ex:
+                st.error(f"Failed to run analysis:\n\n{ex}")
 
     # ------------------------------------------------------------------
     # Step 6: Render results table if matching state key exists
@@ -163,15 +198,17 @@ def show(network: SignedNetwork):
         with ctrl_col1:
             ui_choice = st.selectbox(
                 "Select Correlation Metric:",
-                CorrelationRegistry.get_available_names()
+                CorrelationRegistry.get_available_names(),
+                key="correlation_metric_widget"
             )
 
         with ctrl_col2:
             alpha = st.selectbox(
                 "Select Significance Level (Alpha):",
                 [0.05, 0.01, 0.001, 0.10],
-                index=0,  # Standardmäßig auf 0.05 gesetzt
-                format_func=lambda x: f"α = {x} ({(1-x)*100:.1f}% Confidence)"
+                index=0,  
+                format_func=lambda x: f"α = {x} ({(1-x)*100:.1f}% Confidence)", 
+                key="pvalue_widget"
             )
 
         corr_strategy = CorrelationRegistry.get_measure_class(ui_choice)()
