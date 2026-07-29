@@ -1,6 +1,7 @@
 # SignedDegreeCentrality.py
 import pandas as pd
 
+from signnet.analysis.centrality.centrality_measures.CentralityMeasure import ParameterSpec
 from signnet.analysis.centrality.centrality_measures.CentralityMeasure import CentralityMeasure
 from signnet.models.SignedNetwork import SignedNetwork
 from adapters.NetworkXAdapter import NetworkXAdapter
@@ -22,6 +23,10 @@ class SignedDegreeCentrality(CentralityMeasure):
     
     The implementation currently supports undirected signed networks only.
     """
+
+    PARAMETERS = [
+        ParameterSpec(name="beta", label="Beta (PII)", type="float", default=1.0, min_value=0.0, max_value=10, step=0.05),
+    ]
     
     def __init__(self, beta: float = 1.0):
         """Initializes the centrality measure with a penalization factor for negative edges.

@@ -2,6 +2,7 @@
 import pandas as pd
 import networkx as nx
 
+from signnet.analysis.centrality.centrality_measures.CentralityMeasure import ParameterSpec
 from signnet.analysis.centrality.centrality_measures.CentralityMeasure import CentralityMeasure
 from signnet.adapters.NetworkXAdapter import NetworkXAdapter
 from signnet.models.SignedNetwork import SignedNetwork
@@ -23,6 +24,11 @@ class PiiCentrality(CentralityMeasure):
 
     d(node, edge(u,v)) = min(d(node,u), d(node,v))
     """
+
+    PARAMETERS = [
+        ParameterSpec(name="beta", label="Beta (PII)", type="float", default=-0.25, min_value=-1.0, max_value=0.0, step=0.05),
+        ParameterSpec(name="max_distance", label="Max Distance", type="int", default=3, min_value=1, max_value=10, step=1)
+    ]
 
     def __init__(self, beta: float, max_distance: int):
 

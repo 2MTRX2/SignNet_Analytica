@@ -1,17 +1,27 @@
 # uploaded_network_selector.py
-
+from typing import Optional
 import streamlit as st
+
 from signnet.ui.components.file_upload import file_upload
 from signnet.io.NetworkBuilder import load_and_build_network
 from signnet.io.LoadingRegistry import REPRESENTATION_REGISTRY
 from signnet.io.LoadingRegistry  import STRATEGY_REGISTRY
 from signnet.io.LoadingRegistry import get_available_file_types
 from signnet.io.LoadingRegistry  import get_available_representations
+from signnet.models.SignedNetwork import SignedNetwork
 
-def uploaded_network_selector():
+def uploaded_network_selector() -> Optional[SignedNetwork]:
     """
-    Renders the file upload UI, handles validation, column mapping, 
-    and returns a fully built SignedNetwork instance once processed.
+    Renders the UI for custom network file uploads, validation, and column mapping.
+
+    Manages the end-to-end integration for user-uploaded data. It validates file 
+    formats and representation types, provides interactive selectboxes for 
+    mapping dataframe columns to network structural roles (source, target, sign), 
+    and handles state-driven processing before building the final network.
+
+    Returns:
+        The fully built and initialized network instance, 
+        or None if no file is uploaded, validation fails, or processing is pending.
     """
     config = file_upload()
 

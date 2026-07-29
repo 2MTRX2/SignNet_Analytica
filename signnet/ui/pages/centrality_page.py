@@ -8,12 +8,7 @@ from signnet.analysis.centrality.CentralityAnalysis import CentralityAnalysis
 from signnet.ui.components.centrality_selector import centrality_selector
 from signnet.ui.components.network_summary import network_summary
 
-from signnet.analysis.centrality.centrality_measures.SignedDegreeCentrality import SignedDegreeCentrality
-from signnet.analysis.centrality.centrality_measures.PnCentrality import PnCentrality
-from signnet.analysis.centrality.centrality_measures.PiiCentrality import PiiCentrality
-from signnet.analysis.centrality.centrality_measures.KbCentrality.KbCentralityBallester import KbCentralityBallester
-from signnet.analysis.centrality.centrality_measures.KbCentrality.KbCentralityBloch import KbCentralityBloch
-from signnet.analysis.centrality.centrality_measures.KbCentrality.KbCentralitySadler import KbCentralitySadler
+from signnet.analysis.centrality.CentralityRegistry import CentralityRegistry
 from signnet.analysis.correlations.CorrelationAnalysis import CorrelationAnalysis
 from signnet.analysis.correlations.correlation_measures.SpearmanStrategy import SpearmanStrategy
 from signnet.analysis.correlations.correlation_measures.PearsonStrategy import PearsonStrategy
@@ -47,17 +42,7 @@ def show(network: SignedNetwork):
     # ------------------------------------------------------------------
     # Step 2: Define and collect selected centrality measures
     # ------------------------------------------------------------------
-    st.subheader("Select Centrality Measures")
-
-    # Define all available algorithm options for the selection UI
-    measure_options = [
-        "Signed Degree",
-        "PN Centrality",
-        "PII Centrality",
-        "KB Centrality (Ballester)",
-        "KB Centrality (Bloch)",
-        "KB Centrality (Sadler)"
-    ]
+    measure_options = CentralityRegistry.get_available_names()
 
     # Collect the list of strings representing the selected measures
     selected_names = centrality_selector(measure_options)
@@ -72,68 +57,55 @@ def show(network: SignedNetwork):
     # ------------------------------------------------------------------
     # Step 3: Define default parameter values for advanced measures
     # ------------------------------------------------------------------
-    degree_beta = 1.0
-    pii_beta = -0.25
-    pii_max_distance = 3
+    runtime_arguments = {}
 
-    # Only render the parameter configuration block if a configurable measure is active
-    if "Signed Degree" in selected_names or "PII Centrality" in selected_names:
+    has_parameters = any(len(CentralityRegistry.get_measure_class(name).PARAMETERS) > 0 for name in selected_names)
+
+    if has_parameters:
         st.subheader("Configure Parameters")
         
-        # Split layout into columns for clean visual alignment side-by-side
-        col1, col2 = st.columns(2)
+        for name in selected_names:
+            measure_class = CentralityRegistry.get_measure_class(name)
+            
+            if measure_class.PARAMETERS:
+                st.markdown(f"**{name} Options**")
+                runtime_arguments[name] = {}
+                
+                for param in measure_class.PARAMETERS:
+                    if param.type == "float":
+                        val = st.slider(
+                            param.label, 
+                            min_value=float(param.min_value), 
+                            max_value=float(param.max_value), 
+                            value=float(param.default), 
+                            step=float(param.step),
+                            key=f"{name}_{param.name}"
+                        )
+                    elif param.type == "int":
+                        val = st.number_input(
+                            param.label, 
+                            min_value=int(param.min_value), 
+                            max_value=int(param.max_value), 
+                            value=int(param.default), 
+                            step=int(param.step),
+                            key=f"{name}_{param.name}"
+                        )
+                    runtime_arguments[name][param.name] = val
 
-        # Contextual input for Signed Degree parameter
-        with col1:
-            if "Signed Degree" in selected_names:
-                st.markdown("**Signed Degree Options**")
-                degree_beta = st.number_input(
-                    "Beta (Degree)", 
-                    value=1.0, 
-                    step=0.1
-                )
-
-        # Contextual sliders for PII Centrality parameters
-        with col2:
-            if "PII Centrality" in selected_names:
-                st.markdown("**PII Centrality Options**")
-                pii_beta = st.slider(
-                    "Beta (PII)", 
-                    min_value=-1.0, 
-                    max_value=0.0, 
-                    value=-0.25, 
-                    step=0.05
-                )
-                pii_max_distance = st.slider(
-                    "Max Distance (PII)", 
-                    min_value=0, 
-                    max_value=10, 
-                    value=3
-                )
-        st.divider()
     
     # ------------------------------------------------------------------
     # Step 4: Map selected names to configured class instances
     # ------------------------------------------------------------------
-    selected_measures = {}
+    selected_measures = []
 
-    if "Signed Degree" in selected_names:
-        selected_measures["Signed Degree"] = SignedDegreeCentrality(beta=degree_beta)
-        
-    if "PN Centrality" in selected_names:
-        selected_measures["PN Centrality"] = PnCentrality()
-        
-    if "PII Centrality" in selected_names:
-        selected_measures["PII Centrality"] = PiiCentrality(beta=pii_beta, max_distance=pii_max_distance)
-        
-    if "KB Centrality (Ballester)" in selected_names:
-        selected_measures["KB Centrality (Ballester)"] = KbCentralityBallester()
-        
-    if "KB Centrality (Bloch)" in selected_names:
-        selected_measures["KB Centrality (Bloch)"] = KbCentralityBloch()
-        
-    if "KB Centrality (Sadler)" in selected_names:
-        selected_measures["KB Centrality (Sadler)"] = KbCentralitySadler()
+    for name in selected_names:
+        measure_class = CentralityRegistry.get_measure_class(name)
+
+        kwargs = runtime_arguments.get(name, {}) 
+        instance = measure_class(**kwargs)
+            
+        selected_measures.append(instance)
+
 
     # ------------------------------------------------------------------
     # Step 5: Execute analysis and manage session state persistence
@@ -142,12 +114,20 @@ def show(network: SignedNetwork):
 
     # Generate a unique hash key containing network instance id and all variable settings.
     # This automatically clears old results from the screen if parameters or metrics change.
-    expected_state_key = f"params_{degree_beta}_{pii_beta}_{pii_max_distance}_{sorted(selected_names)}"
+    hash_components = []
+    for name in sorted(selected_names):
+        hash_components.append(name)
+        # Falls das Maß Parameter hat, fügen wir deren aktuelle UI-Werte dem Hash hinzu
+        if name in runtime_arguments:
+            for p_name, p_val in sorted(runtime_arguments[name].items()):
+                hash_components.append(f"{p_name}:{p_val}")
+                
+    expected_state_key = f"params_{'_'.join(hash_components)}"
     
     if st.button("Run Analysis", type="primary"):
         # Wrap execution in a native spinner for complex network operations
         with st.spinner("Calculating selected metrics..."):
-            analysis = CentralityAnalysis(measures=list(selected_measures.values()))
+            analysis = CentralityAnalysis(measures=selected_measures)
 
             st.session_state["active_centrality_results"] = analysis.compute(network)
  

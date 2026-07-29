@@ -1,6 +1,6 @@
 # NetworkBuilder.py
-
 import streamlit as st
+
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.io.LoadingRegistry import REPRESENTATION_REGISTRY
 from signnet.io.LoadingRegistry  import STRATEGY_REGISTRY
@@ -16,33 +16,28 @@ def load_and_build_network(
     target_col: str = 'target',
     sign_col: str = 'sign'
 ) -> SignedNetwork:
-    """Dynamically loads raw network data and builds a structured SignedNetwork object.
+    """
+    Dynamically loads raw network data and builds a structured SignedNetwork object.
 
-    This function automatically selects the appropriate file parsing strategy and 
-    structural normaliser based on the provided configuration. The execution is 
-    cached via Streamlit to ensure fast script re-runs when parameters remain unchanged.
+    Uses a factory/registry pattern to resolve the appropriate file parser and 
+    structural representation format at runtime. The output is cached via Streamlit 
+    to optimize performance during application re-runs.
 
     Args:
-        file_buffer (BytesIO / StringIO): The raw file stream uploaded by the user or from the data registry.
-        file_type (str): The file extension format (e.g., 'csv', 'excel', 'json').
-        representation_type (str): Structural input format, either 'Edge List' 
-            or 'Adjacency Matrix'.
-        is_directed (bool): True if the network edges have a specific direction, 
-            False otherwise.
-        source_col (str, optional): Name of the column representing the source nodes. 
-            Defaults to 'source'. Only used for 'Edge List'.
-        target_col (str, optional): Name of the column representing the target nodes. 
-            Defaults to 'target'. Only used for 'Edge List'.
-        sign_col (str, optional): Name of the column representing the edge signs 
-            (positive/negative). Defaults to 'sign'. Only used for 'Edge List'.
-
-    Raises:
-        ValueError: If `representation_type` is not 'Edge List' or 'Adjacency Matrix'.
-        ValueError: If `file_type` is not supported (not 'csv', 'excel', or 'json').
+        file_buffer (BytesIO | StringIO): Raw file stream from upload or registry.
+        file_type (str): Format extension (e.g., 'csv', 'excel', 'json').
+        representation_type (str): Input structure ('Edge List' or 'Adjacency Matrix').
+        is_directed (bool): True for directed edges, False for undirected.
+        source_col (str, optional): Source node column name. Defaults to 'source'.
+        target_col (str, optional): Target node column name. Defaults to 'target'.
+        sign_col (str, optional): Edge sign column name. Defaults to 'sign'.
 
     Returns:
-        SignedNetwork: An immutable, fully built and structured signed network 
-            instance containing nodes and edges.
+        SignedNetwork: Fully initialized signed network containing nodes and edges.
+
+    Raises:
+        ValueError: If the `representation_type` is not found in REPRESENTATION_REGISTRY.
+        ValueError: If the `file_type` is not found in STRATEGY_REGISTRY.
     """
     if representation_type not in REPRESENTATION_REGISTRY:
         raise ValueError(f"Unsupported network representation: {representation_type}")
