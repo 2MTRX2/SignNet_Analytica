@@ -24,11 +24,11 @@ Requirements:
 
 ### Edge List
 
-The framework expects edge lists in the following format:
-	source	target	sign
-	A	B	1
-	B	C	1
-	A	C	-1
+| source | target | sign |
+| :--- | :--- | :--- |
+| A | B | 1 |
+| B | C | 1 |
+| A | C | -1 |
 
 Requirements:
 
