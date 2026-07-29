@@ -10,9 +10,7 @@ from signnet.ui.components.network_summary import network_summary
 
 from signnet.analysis.centrality.CentralityRegistry import CentralityRegistry
 from signnet.analysis.correlations.CorrelationAnalysis import CorrelationAnalysis
-from signnet.analysis.correlations.correlation_measures.SpearmanStrategy import SpearmanStrategy
-from signnet.analysis.correlations.correlation_measures.PearsonStrategy import PearsonStrategy
-from signnet.analysis.correlations.correlation_measures.KendallStrategy import KendallStrategy
+from signnet.analysis.correlations.CorrelationRegistry import CorrelationRegistry
 
 from signnet.models.SignedNetwork import SignedNetwork
 
@@ -165,7 +163,7 @@ def show(network: SignedNetwork):
         with ctrl_col1:
             ui_choice = st.selectbox(
                 "Select Correlation Metric:",
-                ["Spearman Rank Correlation (Recommended)", "Pearson Linear Correlation", "Kendall Tau Correlation"]
+                CorrelationRegistry.get_available_names()
             )
 
         with ctrl_col2:
@@ -175,13 +173,8 @@ def show(network: SignedNetwork):
                 index=0,  # Standardmäßig auf 0.05 gesetzt
                 format_func=lambda x: f"α = {x} ({(1-x)*100:.1f}% Confidence)"
             )
-        
-        if ui_choice == "Spearman Rank Correlation (Recommended)":
-            corr_strategy = SpearmanStrategy()
-        elif ui_choice == "Pearson Linear Correlation":
-            corr_strategy = PearsonStrategy()
-        else:
-            corr_strategy = KendallStrategy()
+
+        corr_strategy = CorrelationRegistry.get_measure_class(ui_choice)()
 
         analyzer = CorrelationAnalysis(strategy=corr_strategy)
         
