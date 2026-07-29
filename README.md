@@ -4,7 +4,7 @@ This repository contains the implementation of the SignNet research conducted by
 
 ## Supported Input Formats
 
-### Adjacency Matrix (CSV)
+### Adjacency Matrix
 
 The framework expects adjacency matrices in the following format:
 
@@ -21,3 +21,19 @@ Requirements:
 - Row and column labels must be identical.
 - A value of `0` denotes the absence of an edge.
 - Positive and negative values represent signed edges.
+
+### Edge List
+
+The framework expects edge lists in the following format:
+	source	target	sign
+	A	B	1
+	B	C	1
+	A	C	-1
+
+Requirements:
+
+    The first row contains the column headers (e.g., 'source', 'target', 'sign').
+    Each subsequent row represents a distinct signed relationship between two nodes.
+    The source and target columns contain the node labels.
+    The sign column contains numerical values where positive and negative values represent signed edges.
+    Missing combinations or a weight of 0 denote the absence of an edge.
