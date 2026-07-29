@@ -32,8 +32,8 @@ The framework expects edge lists in the following format:
 
 Requirements:
 
-    The first row contains the column headers (e.g., 'source', 'target', 'sign').
-    Each subsequent row represents a distinct signed relationship between two nodes.
-    The source and target columns contain the node labels.
-    The sign column contains numerical values where positive and negative values represent signed edges.
-    Missing combinations or a weight of 0 denote the absence of an edge.
+- The first row contains the column headers (e.g., 'source', 'target', 'sign').
+- Each subsequent row represents a distinct signed relationship between two nodes.
+- The source and target columns contain the node labels.
+- The sign column contains numerical values where positive and negative values represent signed edges.
+- Missing combinations or a weight of 0 denote the absence of an edge.
