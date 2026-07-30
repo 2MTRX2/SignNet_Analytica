@@ -7,11 +7,12 @@ from signnet.io.NetworkBuilder import load_and_build_network
 
 from signnet.models.SignedNetwork import SignedNetwork
 
+
 def predefined_dataset_selector() -> Optional[SignedNetwork]:
     """
     Renders the Streamlit UI to select, describe, and load a predefined dataset.
 
-    Fetches available dataset names from the registry, displays metadata (description 
+    Fetches available dataset names from the DatasetRegistry, displays metadata (description 
     and format) via captions, and attempts to safely read and build the network 
     from the underlying binary file.
 
@@ -19,9 +20,11 @@ def predefined_dataset_selector() -> Optional[SignedNetwork]:
         The initialized signed network instance, or None if an error occurs during file retrieval
         or network building.
     """
+    # Set up the various dataset options
     available_datasets = DatasetRegistry.get_available_names()
     selected_dataset_name = st.selectbox("Choose a sample dataset to test:", available_datasets)
-    
+
+    # Display the info about the selected dataset
     dataset_info = DatasetRegistry.get_info(selected_dataset_name)
     st.caption(f"**Description:** {dataset_info.description}")
     st.caption(f"**Format:** {dataset_info.representation_type} ({dataset_info.file_type})")

@@ -6,6 +6,7 @@ from signnet.ui.components.predefined_dataset_selector import predefined_dataset
 from signnet.ui.components.uploaded_network_selector import uploaded_network_selector
 from signnet.ui.components.GraphBuilder import create_graphical_signed_network
 
+
 def main():
     """Entry point of the Streamlit application."""
 
@@ -34,10 +35,12 @@ def main():
 
     # Proceed with the input method of a predefined dataset
     if input_method == "Predefined Dataset":
+        # Ensures the rendering, the selection, and the loading of a predefined dataset
         network = predefined_dataset_selector()
 
     # Proceed with the input method of an uploaded file
     elif input_method == "Upload File":
+        # Ensures the rendering and the loading of an uploaded dataset
         network = uploaded_network_selector()
 
     # Ensure that no not-implemented method can be chosen
@@ -50,8 +53,11 @@ def main():
     st.divider()
     st.header("2. Centrality Analysis")
 
+    # As soon as a network connection is established, the analysis begins
     if network is not None:
+        # Creates a graphical representation of the network and integrates it into the application
         create_graphical_signed_network(network)
+        # Performs a static analysis of the network: centrality, correlations, p-value
         show_centrality_page(network)
     else:
         st.info("Waiting for a valid network to be loaded in Section 1...")

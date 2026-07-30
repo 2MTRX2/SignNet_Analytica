@@ -2,13 +2,14 @@
 from typing import Optional
 import streamlit as st
 
+from signnet.models.SignedNetwork import SignedNetwork
 from signnet.ui.components.file_upload import file_upload
 from signnet.io.NetworkBuilder import load_and_build_network
 from signnet.io.LoadingRegistry import REPRESENTATION_REGISTRY
 from signnet.io.LoadingRegistry  import STRATEGY_REGISTRY
 from signnet.io.LoadingRegistry import get_available_file_types
 from signnet.io.LoadingRegistry  import get_available_representations
-from signnet.models.SignedNetwork import SignedNetwork
+
 
 def uploaded_network_selector() -> Optional[SignedNetwork]:
     """
@@ -23,6 +24,7 @@ def uploaded_network_selector() -> Optional[SignedNetwork]:
         The fully built and initialized network instance, 
         or None if no file is uploaded, validation fails, or processing is pending.
     """
+    # Handles the upload to the network and automatically selects the appropriate format reader
     config = file_upload()
 
     if config is None:
@@ -41,29 +43,59 @@ def uploaded_network_selector() -> Optional[SignedNetwork]:
     if config.file_type.upper() not in get_available_file_types():
         st.error(f"Unsupported file format: {config.file_type}")
         return None
-    
-    source_name, target_name, sign_name = 'source', 'target', 'sign'
+
+    # Additional parameters
+    mapping_params = {}
+    # Initialisation of a Boolean to define if the loading should continue or not
     proceed_with_loading = True
 
+    # ==================================================================
+    # COLUMN MAPPING FOR EDGE LISTS
+    # ==================================================================
+
     if config.representation == "Edge List":
+        # Instantiate a temporal edge list reader 
         temp_rep = REPRESENTATION_REGISTRY["Edge List"]()
+        # Instantiate a temporal file type reader
         fmt = config.file_type.lower()
 
+        if fmt not in STRATEGY_REGISTRY:
+            raise ValueError(f"Unsupported file format configuration: {config.file_type}")
+        
         temp_loader = STRATEGY_REGISTRY[fmt](temp_rep)
 
-        df_raw = temp_loader.read_raw(config.file)
-        available_cols = list(df_raw.columns)
+        # Read the file to list the available columns
+        try:
+            # Sets the stream at the beginning
+            if hasattr(config.file, "seek"):
+                config.file.seek(0)
+        
+            df_raw = temp_loader.read_raw(config.file)
+            available_cols = list(df_raw.columns)
+
+        except Exception as ex:
+            st.error(f"The file could not be opened. Please check the format:\n\n{ex}")
+            return None
+
+        # If a new file is uploaded the network is considered not to be processed
+        file_id = getattr(config.file, "name", id(config.file))
+        if "last_loaded_file" not in st.session_state or st.session_state.last_loaded_file != file_id:
+            st.session_state.last_loaded_file = file_id
+            st.session_state.network_processed = False
 
         st.subheader("Column Mapping")
         st.info("Please assign the file columns to the network roles:")
 
+        # Set default index for each column
         default_src_idx = 0 if len(available_cols) > 0 else 0
         default_tgt_idx = 1 if len(available_cols) > 1 else 0
         default_sgn_idx = 2 if len(available_cols) > 2 else 0
 
+        # Callback function to reset the processed state. If the user changes one column, the network doesn't get loaded. 
         def reset_network_processed():
             st.session_state.network_processed = False
-        
+
+        # Select the columns. If there is a change, the network is considered not to be processed. 
         col1, col2, col3 = st.columns(3)
         with col1: 
             source_name = st.selectbox("Source Column:", available_cols, index=default_src_idx, key="src_sel_key", on_change=reset_network_processed)
@@ -78,6 +110,14 @@ def uploaded_network_selector() -> Optional[SignedNetwork]:
         if st.button("Process Network Architecture"):
             st.session_state.network_processed = True
 
+        # Parameters only for edgelists
+        mapping_params = {
+        "source_col": source_name,
+        "target_col": target_name,
+        "sign_col": sign_name
+        }
+
+        # Set the Boolean equal to the network_processed state when the column mapping is (not) finished
         proceed_with_loading = st.session_state.network_processed
         
         if not proceed_with_loading:
@@ -93,9 +133,7 @@ def uploaded_network_selector() -> Optional[SignedNetwork]:
                 file_type=config.file_type,
                 representation_type=config.representation,
                 is_directed=config.directed,
-                source_col=source_name, 
-                target_col=target_name,
-                sign_col=sign_name
+                **mapping_params
             )
             return network
         except Exception as ex:
