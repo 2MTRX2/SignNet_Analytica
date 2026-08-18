@@ -1,18 +1,24 @@
 # LoadingRegistry.py
-
 from signnet.io.data_representation.EdgeListNormaliser import EdgeListNormaliser
 from signnet.io.data_representation.AdjacencyMatrixNormaliser import AdjacencyMatrixNormaliser
 from signnet.io.data_loading.CsvStrategy import CsvStrategy
 from signnet.io.data_loading.ExcelStrategy import ExcelStrategy
 from signnet.io.data_loading.JsonStrategy import JsonStrategy
 
-# 1. Central definition of representations
+"""Central structural configuration registers for handling framework I/O operations.
+
+Consolidates the available structural representation mappings and file-loading strategies 
+to achieve a format-agnostic network ingestion pipeline. This registry acts as the 
+decoupled binding layer between raw file system formats and internal data normalization engines.
+"""
+
+# Central definition of representations
 REPRESENTATION_REGISTRY = {
     "Edge List": EdgeListNormaliser,
     "Adjacency Matrix": AdjacencyMatrixNormaliser
 }
 
-# 2. Central definition of loading strategies
+# Central definition of loading strategies
 STRATEGY_REGISTRY = {
     "csv": CsvStrategy,
     "excel": ExcelStrategy,

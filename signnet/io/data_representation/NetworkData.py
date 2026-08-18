@@ -1,4 +1,4 @@
-# signnet/io/data_representation/NetworkData.py
+# NetworkData.py
 from dataclasses import dataclass
 import pandas as pd
 from typing import Optional, Iterable

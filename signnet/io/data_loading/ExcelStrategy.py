@@ -27,7 +27,7 @@ class ExcelStrategy(DataLoadingStrategy):
         self._cached_df = None
 
     def read_raw(self, file_source) -> pd.DataFrame:
-        """This method reads the CSV file into a raw pandas DataFrame."""
+        """This method reads the Excel file into a raw pandas DataFrame."""
 
         if self._cached_df is None:
             self._cached_df = pd.read_excel(file_source)

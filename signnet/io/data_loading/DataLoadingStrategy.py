@@ -6,7 +6,8 @@ from signnet.io.data_representation.NetworkData import NetworkData
 
 
 class DataLoadingStrategy(ABC):
-    """Abstract base class for data loading strategies within the research framework.
+    """
+    Abstract base class for data loading strategies within the research framework.
     This class serves as an interface for all components responsible for 
     reading signed social network data from various file formats or data sources. 
     """

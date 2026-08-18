@@ -31,15 +31,19 @@ class AdjacencyMatrixNormaliser(RepresentationNormaliser):
             pd.DataFrame: A standardized flat edge list DataFrame with 
                 'source', 'target', and 'sign' columns.
         """
+        # first column gets declared as row index
         matrix = df.set_index(df.columns[0])
 
+        # data transformation of row index to strings
         matrix.index = matrix.index.astype(str)
 
+        # extraction of node names into a list
         all_nodes = list(matrix.index)
 
+        # synchronizes column headers with row labels to guarantee a symmetric NxN coordinate system
         matrix.columns = all_nodes
 
-        # deletes the first index column also in the header
+        # filters out any auxiliary or unmapped columns that are not registered as valid nodes
         matrix = matrix[all_nodes] 
         edges_df = transform_matrix_to_edgelist(matrix, directed=self.directed)
 

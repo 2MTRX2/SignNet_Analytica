@@ -1,5 +1,4 @@
-#EdgeListNormaliser
-    
+#EdgeListNormaliser  
 import pandas as pd
 
 from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
@@ -7,7 +6,8 @@ from signnet.io.data_representation.NetworkData import NetworkData
 
 
 class EdgeListNormaliser(RepresentationNormaliser):
-    """Normalizes an existing edge list DataFrame into the framework's canonical format.
+    """
+    Normalizes an existing edge list DataFrame into the framework's canonical format.
 
     This strategy handles data that is already structured as a list of edges but 
     might use non-standard column names. It maps and renames the custom columns 
