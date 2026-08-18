@@ -11,8 +11,6 @@ from signnet.ui.components.correlation_component import render_correlation_analy
 
 from signnet.analysis.centrality.CentralityAnalysis import CentralityAnalysis
 from signnet.analysis.centrality.CentralityRegistry import CentralityRegistry
-from signnet.analysis.correlations.CorrelationAnalysis import CorrelationAnalysis
-from signnet.analysis.correlations.CorrelationRegistry import CorrelationRegistry
 
 from signnet.models.SignedNetwork import SignedNetwork
 
@@ -144,8 +142,4 @@ def show(network: SignedNetwork):
         # ==============================================================
         # CENTRALITY CORRELATION ANALYSIS
         # ==============================================================
-        render_correlation_analysis(
-            centrality_df=centrality_df,
-            correlation_registry=CorrelationRegistry,
-            analysis_class=CorrelationAnalysis,
-        )
+        render_correlation_analysis(centrality_df=centrality_df)
