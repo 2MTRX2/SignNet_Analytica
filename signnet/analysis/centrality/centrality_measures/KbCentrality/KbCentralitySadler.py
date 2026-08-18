@@ -24,7 +24,7 @@ class KbCentralitySadler(BaseKatzBonacich):
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         A, delta, matrix_to_invert = self._prepare_core_system(network)
         
-        # # Calculate vector of Ballester
+        # calculate vector of Ballester
         rhs_ballester = np.ones(network.number_of_nodes)
         b_scores = np.linalg.solve(matrix_to_invert, rhs_ballester)
         

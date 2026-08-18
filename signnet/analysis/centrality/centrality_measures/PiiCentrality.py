@@ -83,16 +83,19 @@ class PiiCentrality(CentralityMeasure):
 
                 sign = attr["sign"]
 
+                # get the distances to each node the edge is connecting
                 du = distances.get(u)
                 dv = distances.get(v)
 
                 if du is None and dv is None:
                     continue
 
+                # the shorter distance of two nodes connected by the edge is equal to the shortest distance to the edge itself
                 edge_distance = min(
                     x for x in (du, dv) if x is not None
                 )
 
+                # if the edge is too far away, don't count it
                 if edge_distance > self.max_distance:
                     continue
 

@@ -6,7 +6,8 @@ from signnet.models.SignedNetwork import SignedNetwork
 
 
 class CentralityAnalysis:
-    """Orchestrates the computation of multiple centrality measures for a signed network.
+    """
+    Orchestrates the computation of multiple centrality measures for a signed network.
 
     This class serves as the central analysis hub, taking a collection of 
     configured centrality measures and executing them sequentially against 

@@ -44,7 +44,8 @@ class SignedDegreeCentrality(CentralityMeasure):
         return f"Signed Degree (β={self.beta})"
 
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
-        """Computes the signed degree metrics and returns them as a structured DataFrame.
+        """
+        Computes the signed degree metrics and returns them as a structured DataFrame.
 
         Args:
             network (SignedNetwork): The canonical domain model of the network.

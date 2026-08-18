@@ -15,6 +15,7 @@ class BaseKatzBonacich(CentralityMeasure):
         if delta is not None and delta <= 0:
             raise ValueError("delta must be greater than zero.")
         self._custom_delta = delta
+
         self._calculated_delta: Optional[float] = None
     
     def _prepare_core_system(self, network: SignedNetwork):
@@ -29,11 +30,11 @@ class BaseKatzBonacich(CentralityMeasure):
         
         delta = 1.0 / (2 * number_of_nodes - 2)
 
-        # Stability Test
+        # stability test
         eigenvalues = np.linalg.eigvals(A)
         max_eigenval = np.max(np.abs(eigenvalues))
         if max_eigenval > 0 and delta >= (1.0 / max_eigenval):
-            raise ValueError(f"Delta ({delta}) ist zu gross für die Matrix-Konvergenz.")
+            raise ValueError(f"Delta ({delta}) is too big for convergence.")
             
         I = np.eye(number_of_nodes)
         matrix_to_invert = I - (delta * A)
