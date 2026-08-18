@@ -5,7 +5,7 @@ from typing import Optional
 
 from signnet.analysis.centrality.centrality_measures.CentralityMeasure import CentralityMeasure
 from signnet.models.SignedNetwork import SignedNetwork
-from signnet.utils.matrix_factory import MatrixFactory
+from signnet.utils.MatrixFactory import MatrixFactory
 from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
 
 class BaseKatzBonacich(CentralityMeasure):

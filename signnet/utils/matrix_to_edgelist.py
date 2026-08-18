@@ -1,4 +1,4 @@
-# matrix_helpers.py
+# matrix_to_edgelist.py
 import pandas as pd
 import numpy as np
 
@@ -9,7 +9,8 @@ def transform_matrix_to_edgelist(
     target_col: str = 'target', 
     sign_col: str = 'sign'
 ) -> pd.DataFrame:
-    """Transforms a square adjacency matrix into a standardized flat edge list.
+    """
+    Transforms a square adjacency matrix into a standardized flat edge list.
 
     This utility function converts a 2D network representation (Wide-Format) 
     into a 1D relational table (Long-Format). It validates the input structure,

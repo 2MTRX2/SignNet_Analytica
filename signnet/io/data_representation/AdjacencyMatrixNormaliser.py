@@ -2,7 +2,7 @@
 import pandas as pd
 
 from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
-from signnet.utils.matrix_helpers import transform_matrix_to_edgelist
+from signnet.utils.matrix_to_edgelist import transform_matrix_to_edgelist
 from signnet.io.data_representation.NetworkData import NetworkData
 
 class AdjacencyMatrixNormaliser(RepresentationNormaliser):
