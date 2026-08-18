@@ -3,7 +3,6 @@ import networkx as nx
 
 from signnet.models.SignedNetwork import SignedNetwork
 
-
 class NetworkXAdapter:
     """
     Converts the framework's SignedNetwork domain model into a NetworkX graph.
@@ -12,8 +11,6 @@ class NetworkXAdapter:
     and creates either an undirected Graph or a directed DiGraph depending on
     the network configuration.
     """
-
-
     @staticmethod
     def to_networkx(network: SignedNetwork) -> nx.Graph:
 
