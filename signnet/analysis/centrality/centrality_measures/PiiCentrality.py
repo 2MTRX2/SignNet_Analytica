@@ -43,7 +43,7 @@ class PiiCentrality(CentralityMeasure):
 
     @property
     def name(self) -> str:
-        return f"PII (β={self.beta}, m_dist={self.max_distance}) "
+        return f"PII (β={self.beta}, m_dist={self.max_distance})"
 
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
 
