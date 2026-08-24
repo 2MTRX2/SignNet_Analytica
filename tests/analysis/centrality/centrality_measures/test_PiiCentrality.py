@@ -92,7 +92,6 @@ def test_compute_pii_centrality():
         {"node": "Center",      pii_centrality.name: 2.0}
     ])
 
-
     # ACT
     result_df = pii_centrality.compute(network)
 

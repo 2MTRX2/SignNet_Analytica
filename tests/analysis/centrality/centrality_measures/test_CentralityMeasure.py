@@ -57,7 +57,6 @@ def test_cannot_instantiate_abstract_base_class():
     with pytest.raises(TypeError, match="Can't instantiate abstract class CentralityMeasure"):
         CentralityMeasure()
 
-
 def test_subclass_must_implement_abstract_methods():
     # ARRANGE
     # Building an inheriting class which implements no compute
@@ -69,7 +68,6 @@ def test_subclass_must_implement_abstract_methods():
     # ACT & ASSERT
     with pytest.raises(TypeError, match="with abstract method"):
         IncompleteMeasure()
-
 
 def test_successful_subclass_instantiation():
     # ARRANGE
