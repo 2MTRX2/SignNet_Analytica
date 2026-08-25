@@ -77,7 +77,7 @@ class CorrelationAnalysis:
                     corr_matrix[i, j] = 1.0
                     p_matrix[i, j] = 0.0
                 else:
-                    valid_data = centrality_measures[[columns[i], columns[j]]].dropna()
+                    valid_data = df[[columns[i], columns[j]]].dropna()
                     
                     if len(valid_data) > 1:
                         # invoke of the calculation of the appropriate correlation strategy
