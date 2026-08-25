@@ -1,4 +1,4 @@
-#EdgeListNormaliser  
+# EdgeListNormaliser.py
 import pandas as pd
 
 from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
