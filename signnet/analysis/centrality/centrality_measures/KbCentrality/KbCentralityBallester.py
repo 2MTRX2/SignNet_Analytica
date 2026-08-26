@@ -4,6 +4,7 @@ import pandas as pd
 
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.analysis.centrality.centrality_measures.KbCentrality.BaseKatzBonacich import BaseKatzBonacich
+from signnet.utils.decorators import require_edges
 
 class KbCentralityBallester(BaseKatzBonacich):
     """
@@ -22,6 +23,7 @@ class KbCentralityBallester(BaseKatzBonacich):
     def name(self) -> str:
         return "K-B (Ballester, t=0)"
     
+    @require_edges
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         A, delta, matrix_to_invert = self._prepare_core_system(network)
         rhs_vector = np.ones(network.number_of_nodes)

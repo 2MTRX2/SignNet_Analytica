@@ -2,6 +2,7 @@
 import pytest
 import numpy as np
 from unittest.mock import MagicMock, patch
+import pandas as pd
 
 from signnet.analysis.centrality.centrality_measures.KbCentrality.BaseKatzBonacich import BaseKatzBonacich
 from signnet.models.SignedNetwork import SignedNetwork
@@ -107,3 +108,13 @@ def test_prepare_system_fails_stability_check(mock_adjacency):
     # ACT & ASSERT
     with pytest.raises(ValueError, match="Delta .* is too big for convergence."):
         kb._prepare_core_system(mock_network)
+
+def test_prepare_core_system_with_empty_network_raises_error():
+    # ARRANGE
+    empty_edges = pd.DataFrame(columns=['source', 'target', 'sign'])
+    network = SignedNetwork(edges=empty_edges, nodes=["A", "B"])
+    measure = BaseKatzBonacich()
+
+    # ACT & ASSERT - Da der Dekorator jetzt davor sitzt, erwarten wir den Fehler
+    with pytest.raises(ValueError, match="The network topology contains no edges"):
+        measure._prepare_core_system(network)

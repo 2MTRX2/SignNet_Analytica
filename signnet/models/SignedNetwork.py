@@ -55,9 +55,6 @@ class SignedNetwork:
         
         if edges.empty and (nodes is None or len(list(nodes)) == 0):
             raise ValueError("Network contains no edges and no nodes.")
-        
-        if edges.empty:
-            raise ValueError("Network contains no edges.")
         if edges[["source", "target"]].isnull().any().any():
             raise ValueError("Source and target nodes must not be null.")
         if edges["sign"].isnull().any():

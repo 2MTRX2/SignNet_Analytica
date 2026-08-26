@@ -6,6 +6,7 @@ from signnet.analysis.centrality.centrality_measures.CentralityMeasure import Ce
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.utils.MatrixFactory import MatrixFactory
 from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
+from signnet.utils.decorators import require_edges
 
 class PnCentrality(CentralityMeasure):
     """
@@ -26,6 +27,7 @@ class PnCentrality(CentralityMeasure):
     def name(self) -> str:
         return "PN"
 
+    @require_edges
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         """Computes the PN-Centrality vector and returns a structured DataFrame.
 

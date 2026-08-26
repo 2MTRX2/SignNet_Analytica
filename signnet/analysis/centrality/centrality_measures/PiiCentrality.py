@@ -7,7 +7,7 @@ from signnet.analysis.centrality.centrality_measures.CentralityMeasure import Ce
 from signnet.adapters.NetworkXAdapter import NetworkXAdapter
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
-
+from signnet.utils.decorators import require_edges
 
 class PiiCentrality(CentralityMeasure):
     """
@@ -45,6 +45,7 @@ class PiiCentrality(CentralityMeasure):
     def name(self) -> str:
         return f"PII (β={self.beta}, m_dist={self.max_distance})"
 
+    @require_edges
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
 
         if network.directed:

@@ -102,3 +102,13 @@ def test_compute_pii_centrality():
     result_df = result_df.sort_index()
     expected_df = expected_df.sort_index()
     pd.testing.assert_frame_equal(result_df, expected_df)
+
+def test_calculate_with_empty_network_raises_error():
+    # ARRANGE
+    empty_edges = pd.DataFrame(columns=['source', 'target', 'sign'])
+    network = SignedNetwork(edges=empty_edges, nodes=["A", "B"])
+    measure = PiiCentrality()
+
+    # ACT & ASSERT - Da der Dekorator jetzt davor sitzt, erwarten wir den Fehler
+    with pytest.raises(ValueError, match="The network topology contains no edges"):
+        measure.compute(network)  

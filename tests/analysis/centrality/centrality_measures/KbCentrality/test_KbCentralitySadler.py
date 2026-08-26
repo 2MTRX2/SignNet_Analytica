@@ -93,3 +93,13 @@ def test_compute_propagates_exception_from_preparation(mock_prepare_system):
     # ACT & ASSERT
     with pytest.raises(NotImplementedError, match="KB-centrality currently supports only undirected networks."):
         kb_sadler.compute(mock_network)
+
+def test_calculate_with_empty_network_raises_error():
+    # ARRANGE
+    empty_edges = pd.DataFrame(columns=['source', 'target', 'sign'])
+    network = SignedNetwork(edges=empty_edges, nodes=["A", "B"])
+    measure = KbCentralitySadler()
+
+    # ACT & ASSERT - Da der Dekorator jetzt davor sitzt, erwarten wir den Fehler
+    with pytest.raises(ValueError, match="The network topology contains no edges"):
+        measure.compute(network)  

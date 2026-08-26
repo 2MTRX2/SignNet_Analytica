@@ -4,6 +4,7 @@ import pandas as pd
 
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.analysis.centrality.centrality_measures.KbCentrality.BaseKatzBonacich import BaseKatzBonacich
+from signnet.utils.decorators import require_edges
 
 class KbCentralitySadler(BaseKatzBonacich):
     """
@@ -20,7 +21,8 @@ class KbCentralitySadler(BaseKatzBonacich):
     @property
     def name(self) -> str:
         return "K-B (Sadler, t=1 with d=t-1)"
-    
+
+    @require_edges
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         A, delta, matrix_to_invert = self._prepare_core_system(network)
         

@@ -6,6 +6,7 @@ from signnet.analysis.centrality.centrality_measures.CentralityMeasure import Ce
 from signnet.models.SignedNetwork import SignedNetwork
 from adapters.NetworkXAdapter import NetworkXAdapter
 from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
+from signnet.utils.decorators import require_edges
 
 class SignedDegreeCentrality(CentralityMeasure):
     """
@@ -43,6 +44,7 @@ class SignedDegreeCentrality(CentralityMeasure):
     def name(self) -> str:
         return f"Signed Degree (β={self.beta})"
 
+    @require_edges
     def compute(self, network: SignedNetwork) -> pd.DataFrame:
         """
         Computes the signed degree metrics and returns them as a structured DataFrame.

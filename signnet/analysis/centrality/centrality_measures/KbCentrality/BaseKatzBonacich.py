@@ -7,6 +7,7 @@ from signnet.analysis.centrality.centrality_measures.CentralityMeasure import Ce
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.utils.MatrixFactory import MatrixFactory
 from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
+from signnet.utils.decorators import require_edges
 
 class BaseKatzBonacich(CentralityMeasure):
     """Engine for versions of the Katz-Bonacich-based centralities."""
@@ -17,7 +18,8 @@ class BaseKatzBonacich(CentralityMeasure):
         self._custom_delta = delta
 
         self._calculated_delta: Optional[float] = None
-    
+
+    @require_edges
     def _prepare_core_system(self, network: SignedNetwork):
         if network.directed:
             raise NotImplementedError("KB-centrality currently supports only undirected networks.")
