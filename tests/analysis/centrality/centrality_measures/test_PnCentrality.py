@@ -48,9 +48,9 @@ def test_compute_matrix_convergence_error():
 
     # this network should trigger the constraint since the values grow with a factor of 20 and get discounted with an alpha of 0.25
     edges_data = {
-        "source": ["A", "B", "C"],
-        "target": ["B", "C", "A"],
-        "sign": [-1000.0, -1000.0, -1000.0] 
+        "source": ["A", "B", "C", "D", "A", "C"],
+        "target": ["B", "C", "D", "A", "C", "B"],
+        "sign": [100.0, -500.0, 1000.0, -200.0, 800.0, -900.0]
     }
     df_edges = pd.DataFrame(edges_data)
 
