@@ -68,6 +68,8 @@ def test_compute_matrix_convergence_error():
 
     expected_msg = re.escape(raw_msg)
 
+    print(pn_centrality.compute)
+
     with pytest.raises(ValueError, match=expected_msg):
         pn_centrality.compute(network) 
 
