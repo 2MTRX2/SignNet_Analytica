@@ -109,7 +109,8 @@ def test_prepare_system_fails_stability_check(mock_adjacency):
     # max_eigenval = 3. 
     # Stabilitätsprüfung: delta (0.5) >= 1.0 / 3 (0.333) -> should not work
     mock_A = np.array([
-        [3, 0]
+        [3, 0], 
+        [0, 3]
     ])
     mock_adjacency.return_value = mock_A
     

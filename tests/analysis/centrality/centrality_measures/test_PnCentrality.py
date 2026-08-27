@@ -49,7 +49,7 @@ def test_compute_matrix_convergence_error():
     edges_data = {
         "source": ["A", "B", "C"],
         "target": ["B", "C", "A"],
-        "sign": [1000.0, 1000.0, 1000.0] 
+        "sign": [-1000.0, -1000.0, -1000.0] 
     }
     df_edges = pd.DataFrame(edges_data)
 

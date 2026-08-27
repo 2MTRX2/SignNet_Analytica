@@ -54,7 +54,7 @@ def test_load_delegates_to_representation_handler(csv_strategy, mock_representat
         result = csv_strategy.load(fake_file)
 
         # ASSERT
-        mock_representation.to_network_data.assert_called_once_with(fake_df, sep=None, engine='python')
+        mock_representation.to_network_data.assert_called_once_with(fake_df)
         
         assert result is mock_network_data
 
