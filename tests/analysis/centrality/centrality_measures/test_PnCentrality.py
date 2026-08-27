@@ -3,6 +3,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 import pandas as pd
 import numpy as np
+import re
 
 from signnet.analysis.centrality.centrality_measures.PnCentrality import PnCentrality
 from signnet.analysis.centrality.centrality_measures.CentralityMeasure import ParameterSpec
@@ -60,8 +61,14 @@ def test_compute_matrix_convergence_error():
     max_eigenval = np.max(np.abs(eigenvalues))
     alpha = 1.0 / (2 * network.number_of_nodes - 2)
 
-    with pytest.raises(ValueError, match=f"Alpha ({alpha}) is too large for matrix convergence with this specific dataset. "
-                       f"It must be smaller than 1 / |lambda_max| = {1.0 / max_eigenval:.4f}"):
+    raw_msg = (
+        f"Alpha ({alpha}) is too large for matrix convergence with this specific dataset. "
+        f"It must be smaller than 1 / |lambda_max| = {1.0 / max_eigenval:.4f}"
+    )
+
+    expected_msg = re.escape(raw_msg)
+
+    with pytest.raises(ValueError, match=expected_msg):
         pn_centrality.compute(network) 
 
 def test_compute_matrix_singularity_error(): 
