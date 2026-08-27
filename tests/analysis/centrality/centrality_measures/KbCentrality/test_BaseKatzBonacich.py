@@ -73,7 +73,7 @@ def test_prepare_system_success(mock_adjacency):
     # Simple adjacency matrix
     # max_eigenval == 2 in this case
     mock_A = np.array([
-        [0, 0, 1]
+        [0, 0, 1],
         [0, 0, 1],
         [1, 1, 0]
     ])

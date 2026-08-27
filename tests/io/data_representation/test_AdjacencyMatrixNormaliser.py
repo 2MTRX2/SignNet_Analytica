@@ -22,7 +22,7 @@ def test_to_network_data_with_default_index():
     expected_edges = pd.DataFrame({
         "source": ["A", "A", "B", "C"],
         "target": ["B", "C", "A", "A"],
-        "sign": [1, -1, 1, -1]
+        "sign": [1.0, -1.0, 1.0, -1.0]
     }).reset_index(drop=True)
 
     # ACT
