@@ -44,5 +44,5 @@ def test_network_data_is_frozen_and_immutable():
         network_data.nodes = ["X", "Y"]
 
     # try to expand with a new attribute
-    with pytest.raises(TypeError, match="cannot assign to field"):
+    with pytest.raises(FrozenInstanceError, match="cannot assign to field 'new_attribute'"):
         network_data.new_attribute = "test"

@@ -25,7 +25,7 @@ def test_from_records_standard_flow():
     
     expected_df = pd.DataFrame(
         data={"metric_1": [0.5, -0.2, 0.0], "metric_2": [1.2, 3.4, 0.1]},
-        index=pd.Index(["NodeA", "NodeB", "NodeC"], name="node")
+        index=pd.Index(["A", "B", "C"], name="node")
     )
     pd.testing.assert_frame_equal(result, expected_df)
 

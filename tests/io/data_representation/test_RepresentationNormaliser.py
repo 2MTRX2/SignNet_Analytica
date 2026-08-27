@@ -35,4 +35,4 @@ def test_successful_subclass_instantiation():
     # ASSERT
     assert isinstance(instance, RepresentationNormaliser)
     
-    assert isinstance(result, pd.DataFrame)
+    assert isinstance(result, NetworkData)

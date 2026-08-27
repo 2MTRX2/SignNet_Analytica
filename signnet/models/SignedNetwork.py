@@ -13,8 +13,9 @@ class SignedNetwork:
     matrix factories within the framework.
     """
     def __init__(self, edges: pd.DataFrame, nodes: Optional[Iterable]=None, directed: bool = False):
-
         self._directed = directed
+
+        self._validate(edges, nodes)
         
         # Make a copy of the dataframe edgelist and save only the relevant columns (pandas dataframe)
         if edges.empty:
@@ -25,8 +26,6 @@ class SignedNetwork:
         # One-time calculation of the existing nodes saved in a set and a list for quick search 
         if nodes is None:
             nodes = (set(edges["source"]) | set(edges["target"]))
-
-        self._validate(edges, nodes)
 
         self._nodes_set: Set = set(nodes)
         self._nodes_list: List = sorted(list(self._nodes_set))

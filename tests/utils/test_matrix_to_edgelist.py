@@ -81,7 +81,7 @@ def test_transform_matrix_to_edgelist_non_numeric_handling():
     # ARRANGE 
     matrix_data = [
         [0, "1", "invalid_string"],
-        [1, 0, np.nan],
+        [-1, 0, np.nan],
         ["-1", 0, 0]
     ]
     nodes = ["A", "B", "C"]

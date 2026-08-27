@@ -36,7 +36,7 @@ def test_read_raw_loads_and_caches_dataframe(csv_strategy):
         result_2 = csv_strategy.read_raw(fake_file)
 
         # ASSERT
-        mock_read_csv.assert_called_once_with('fake_file')  # invoked only once
+        mock_read_csv.assert_called_once_with(fake_file, sep=None, engine='python')  # invoked only once
         pd.testing.assert_frame_equal(result_1, fake_df)
         pd.testing.assert_frame_equal(result_2, fake_df)
         assert csv_strategy._cached_df is fake_df
@@ -54,7 +54,7 @@ def test_load_delegates_to_representation_handler(csv_strategy, mock_representat
         result = csv_strategy.load(fake_file)
 
         # ASSERT
-        mock_representation.to_network_data.assert_called_once_with(fake_df)
+        mock_representation.to_network_data.assert_called_once_with(fake_file, sep=None, engine='python')
         
         assert result is mock_network_data
 

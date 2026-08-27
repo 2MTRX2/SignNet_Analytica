@@ -51,7 +51,7 @@ def transform_matrix_to_edgelist(
     # Rename columns to the framework's canonical names
     edgelist_df.columns = [source_col, target_col, sign_col]
 
-    edgelist_df[sign_col] = pd.to_numeric(edgelist_df[sign_col], errors='coerce')
+    edgelist_df[sign_col] = pd.to_numeric(edgelist_df[sign_col], errors='coerce').astype(float)
     edgelist_df = edgelist_df.dropna(subset=[sign_col])
     
     # Filter out all lines where no edge exists (sign == 0) and clean the row index
