@@ -4,7 +4,7 @@ import pandas as pd
 from signnet.analysis.centrality.centrality_measures.CentralityMeasure import ParameterSpec
 from signnet.analysis.centrality.centrality_measures.CentralityMeasure import CentralityMeasure
 from signnet.models.SignedNetwork import SignedNetwork
-from adapters.NetworkXAdapter import NetworkXAdapter
+from signnet.adapters.NetworkXAdapter import NetworkXAdapter
 from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
 from signnet.utils.decorators import require_edges
 

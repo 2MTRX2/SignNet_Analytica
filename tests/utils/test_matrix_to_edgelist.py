@@ -104,7 +104,7 @@ def test_transform_matrix_to_edgelist_not_square_raises_error():
     # ARRANGE 
     matrix_data = [
         [0, 1],
-        [1, 0]
+        [1, 0],
         [-1, 1]
     ]
     matrix_df = pd.DataFrame(matrix_data, index=["A", "B", "C"], columns=["A", "B"])

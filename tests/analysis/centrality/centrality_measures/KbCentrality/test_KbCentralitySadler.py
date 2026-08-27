@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from unittest.mock import MagicMock, patch
 
-from signnet.analysis.centrality.centrality_measures.KbCentrality.KbCentralityBallester import KbCentralitySadler
+from signnet.analysis.centrality.centrality_measures.KbCentrality.KbCentralitySadler import KbCentralitySadler
 from signnet.models.SignedNetwork import SignedNetwork
 
 # =====================================================================

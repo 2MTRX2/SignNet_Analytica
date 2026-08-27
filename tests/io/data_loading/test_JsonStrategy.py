@@ -3,7 +3,7 @@ import pytest
 import pandas as pd
 from unittest.mock import MagicMock, patch
 
-from signnet.io.data_loading.ExcelStrategy import JsonStrategy
+from signnet.io.data_loading.JsonStrategy import JsonStrategy
 from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
 from signnet.io.data_representation.NetworkData import NetworkData
 
