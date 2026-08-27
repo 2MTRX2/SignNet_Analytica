@@ -4,7 +4,9 @@ import pandas as pd
 import numpy as np
 
 from signnet.analysis.correlations.CorrelationAnalysis import CorrelationAnalysis
-from signnet.analysis.correlations.correlation_measures import KendallStrategy, PearsonStrategy, SpearmanStrategy
+from signnet.analysis.correlations.correlation_measures.KendallStrategy import KendallStrategy
+from signnet.analysis.correlations.correlation_measures.PearsonStrategy import PearsonStrategy
+from signnet.analysis.correlations.correlation_measures.SpearmanStrategy import SpearmanStrategy
 
 # =====================================================================
 # 1. ANALYSIS TESTS
