@@ -43,13 +43,13 @@ def test_read_raw_loads_and_caches_dataframe(json_strategy):
 
 def test_load_delegates_to_representation_handler(json_strategy, mock_representation):
     # ARRANGE
-    fake_file = "dummy_network.xlsx"
+    fake_file = "dummy_network.json"
     fake_df = pd.DataFrame({"raw_data": [10, 20]})
     mock_network_data = MagicMock(spec=NetworkData)
 
     mock_representation.to_network_data.return_value = mock_network_data
 
-    with patch("pandas.read_excel", return_value=fake_df):
+    with patch("pandas.read_json", return_value=fake_df):
         # ACT
         result = json_strategy.load(fake_file)
 

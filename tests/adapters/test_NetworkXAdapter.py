@@ -39,8 +39,8 @@ def test_to_networkx_undirected_with_isolated_nodes():
     assert graph.has_edge("B", "C")
     assert graph["B"]["C"]["sign"] == -1  
 
-    assert graph.has_edge("B", "C")
-    assert graph["B"]["C"]["sign"] == -3  
+    assert graph.has_edge("C", "D")
+    assert graph["C"]["D"]["sign"] == -3  
 
 
 def test_to_networkx_directed():

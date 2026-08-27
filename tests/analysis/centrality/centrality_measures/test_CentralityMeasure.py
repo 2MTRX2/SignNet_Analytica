@@ -66,7 +66,7 @@ def test_subclass_must_implement_abstract_methods():
             return "Incomplete"
 
     # ACT & ASSERT
-    with pytest.raises(TypeError, match="with abstract method"):
+    with pytest.raises(TypeError, match="Can't instantiate abstract class IncompleteMeasure without an implementation for abstract method 'compute'"):
         IncompleteMeasure()
 
 def test_successful_subclass_instantiation():

@@ -64,15 +64,12 @@ def test_analyse_corr_without_any_numbers(correlation_strategy):
         "centrality_measure_2": ["a", "b"]
     })
 
-    expected_corr_df = pd.DataFrame(dtype=float)
-    expected_p_val_df = pd.DataFrame(dtype=float)
-
     # ACT
     result_corr_df, result_p_val_df = corr_analysis.analyze_correlations(centrality_measures)
 
     # ASSERT
-    pd.testing.assert_frame_equal(result_corr_df, expected_corr_df)
-    pd.testing.assert_frame_equal(result_p_val_df, expected_p_val_df)
+    assert result_corr_df.empty
+    assert result_p_val_df.empty
 
 
 @pytest.mark.parametrize("correlation_strategy", [

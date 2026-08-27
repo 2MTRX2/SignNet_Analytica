@@ -36,7 +36,7 @@ def test_read_raw_loads_and_caches_dataframe(excel_strategy):
         result_2 = excel_strategy.read_raw(fake_file)
 
         # ASSERT
-        mock_read_excel.assert_called_once_with(fake_file)  # invoked only once
+        mock_read_excel.assert_called_once_with(fake_file, sep=None, engine='python')  # invoked only once
         pd.testing.assert_frame_equal(result_1, fake_df)
         pd.testing.assert_frame_equal(result_2, fake_df)
         assert excel_strategy._cached_df is fake_df

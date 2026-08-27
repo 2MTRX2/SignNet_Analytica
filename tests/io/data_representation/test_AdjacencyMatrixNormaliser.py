@@ -10,7 +10,7 @@ from signnet.io.data_representation.NetworkData import NetworkData
 
 def test_to_network_data_with_default_index():
     # ARRANGE
-    normaliser = AdjacencyMatrixNormaliser()
+    normaliser = AdjacencyMatrixNormaliser(directed=True)
     
     matrix_df = pd.DataFrame({
         "node_labels": ["A", "B", "C"],
@@ -48,7 +48,7 @@ def test_to_network_data_with_int_index():
     expected_edges = pd.DataFrame({
         "source": ["1", "1", "2"],
         "target": ["2", "3", "3"],
-        "sign": [1, -1, 1]
+        "sign": [1.0, -1.0, 1.0]
     }).reset_index(drop=True)
 
     # ACT
@@ -74,7 +74,7 @@ def test_to_network_data_with_isolated_node():
     expected_edges = pd.DataFrame({
         "source": ["A"],
         "target": ["B"],
-        "sign": [-1]
+        "sign": [-1.0]
     }).reset_index(drop=True)
 
     # ACT

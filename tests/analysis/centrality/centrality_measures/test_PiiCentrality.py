@@ -107,8 +107,8 @@ def test_calculate_with_empty_network_raises_error():
     # ARRANGE
     empty_edges = pd.DataFrame(columns=['source', 'target', 'sign'])
     network = SignedNetwork(edges=empty_edges, nodes=["A", "B"])
-    measure = PiiCentrality()
+    measure = PiiCentrality(beta=-0.2, max_distance=3)
 
-    # ACT & ASSERT - Da der Dekorator jetzt davor sitzt, erwarten wir den Fehler
+    # ACT & ASSERT
     with pytest.raises(ValueError, match="The network topology contains no edges"):
         measure.compute(network)  

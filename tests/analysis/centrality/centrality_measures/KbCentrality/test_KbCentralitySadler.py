@@ -74,7 +74,7 @@ def test_compute_success(mock_to_dataframe, mock_prepare_system):
     actual_args = mock_to_dataframe.call_args[0]
     assert actual_args[0] == mock_network.nodes
     assert np.allclose(actual_args[1], expected_scores)
-    assert actual_args[2] == "K-B (Bloch, t=1 with d=t)"
+    assert actual_args[2] == "K-B (Sadler, t=1 with d=t-1)"
 
     # Verify the output DataFrame matches the mock dataframe
     pd.testing.assert_frame_equal(result_df, expected_df)
@@ -100,6 +100,6 @@ def test_calculate_with_empty_network_raises_error():
     network = SignedNetwork(edges=empty_edges, nodes=["A", "B"])
     measure = KbCentralitySadler()
 
-    # ACT & ASSERT - Da der Dekorator jetzt davor sitzt, erwarten wir den Fehler
+    # ACT & ASSERT
     with pytest.raises(ValueError, match="The network topology contains no edges"):
         measure.compute(network)  

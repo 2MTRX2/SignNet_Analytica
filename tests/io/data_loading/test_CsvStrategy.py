@@ -28,7 +28,7 @@ def test_read_raw_loads_and_caches_dataframe(csv_strategy):
     fake_file = "dummy_network.xlsx"
     fake_df = pd.DataFrame({"source": [1, 2], "target": [3, 4]})
 
-    with patch("pandas.read_csv", return_value=fake_df) as mock_read_excel:
+    with patch("pandas.read_csv", return_value=fake_df) as mock_read_csv:
         # 1. test reading
         result_1 = csv_strategy.read_raw(fake_file)
         
@@ -36,7 +36,7 @@ def test_read_raw_loads_and_caches_dataframe(csv_strategy):
         result_2 = csv_strategy.read_raw(fake_file)
 
         # ASSERT
-        mock_read_excel.assert_called_once_with(fake_file)  # invoked only once
+        mock_read_csv.assert_called_once_with('fake_file')  # invoked only once
         pd.testing.assert_frame_equal(result_1, fake_df)
         pd.testing.assert_frame_equal(result_2, fake_df)
         assert csv_strategy._cached_df is fake_df

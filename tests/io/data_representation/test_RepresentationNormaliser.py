@@ -3,7 +3,7 @@ import pytest
 import pandas as pd
 from unittest.mock import MagicMock
 
-from signnet.io.data_representation import RepresentationNormaliser
+from signnet.io.data_representation.RepresentationNormaliser import RepresentationNormaliser
 from signnet.io.data_representation.NetworkData import NetworkData
 
 # =====================================================================

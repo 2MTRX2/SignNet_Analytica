@@ -22,7 +22,7 @@ def test_subclass_must_implement_abstract_methods():
         pass
 
     # ACT & ASSERT
-    with pytest.raises(TypeError, match="with abstract method"):
+    with pytest.raises(TypeError, match="Can't instantiate abstract class IncompleteCorrelationStrategy without an implementation for abstract method 'calculate'"):
         IncompleteCorrelationStrategy()
 
 

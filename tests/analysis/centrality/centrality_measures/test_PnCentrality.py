@@ -8,6 +8,7 @@ from signnet.analysis.centrality.centrality_measures.PnCentrality import PnCentr
 from signnet.analysis.centrality.centrality_measures.CentralityMeasure import ParameterSpec
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.utils.CentralityResultFormatter import CentralityResultFormatter
+from signnet.utils.MatrixFactory import MatrixFactory
 
 # =====================================================================
 # 1. PROPERTY TESTS
@@ -48,14 +49,16 @@ def test_compute_matrix_convergence_error():
     edges_data = {
         "source": ["A", "B", "C"],
         "target": ["B", "C", "A"],
-        "sign": [10.0, 10.0, 10.0] 
+        "sign": [1000.0, 1000.0, 1000.0] 
     }
     df_edges = pd.DataFrame(edges_data)
 
     network = SignedNetwork(edges=df_edges, directed=False)
 
-    alpha = 0.25
-    max_eigenval = 20
+    A_tilde = MatrixFactory.tilde(network)
+    eigenvalues = np.linalg.eigvals(A_tilde)
+    max_eigenval = np.max(np.abs(eigenvalues))
+    alpha = 1.0 / (2 * network.number_of_nodes - 2)
 
     with pytest.raises(ValueError, match=f"Alpha ({alpha}) is too large for matrix convergence with this specific dataset. "
                        f"It must be smaller than 1 / |lambda_max| = {1.0 / max_eigenval:.4f}"):
@@ -111,6 +114,6 @@ def test_calculate_with_empty_network_raises_error():
     network = SignedNetwork(edges=empty_edges, nodes=["A", "B"])
     measure = PnCentrality()
 
-    # ACT & ASSERT - Da der Dekorator jetzt davor sitzt, erwarten wir den Fehler
+    # ACT & ASSERT
     with pytest.raises(ValueError, match="The network topology contains no edges"):
         measure.compute(network)  

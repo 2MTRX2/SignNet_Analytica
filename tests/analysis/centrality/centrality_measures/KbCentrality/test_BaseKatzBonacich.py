@@ -13,7 +13,8 @@ from signnet.models.SignedNetwork import SignedNetwork
 
 def test_init_with_valid_delta():
     # ARRANGE & ACT
-    kb = BaseKatzBonacich(delta=0.5)
+    with patch.object(BaseKatzBonacich, "__abstractmethods__", set()):
+        kb = BaseKatzBonacich(delta=0.5)
     
     # ASSERT
     assert kb._custom_delta == 0.5
@@ -21,11 +22,12 @@ def test_init_with_valid_delta():
 
 def test_init_with_invalid_delta_raises_value_error():
     # ARRANGE, ACT & ASSERT
-    with pytest.raises(ValueError, match="delta must be greater than zero."):
-        BaseKatzBonacich(delta=0)
-        
-    with pytest.raises(ValueError, match="delta must be greater than zero."):
-        BaseKatzBonacich(delta=-1.5)
+    with patch.object(BaseKatzBonacich, "__abstractmethods__", set()):
+        with pytest.raises(ValueError, match="delta must be greater than zero."):
+            BaseKatzBonacich(delta=0)
+    with patch.object(BaseKatzBonacich, "__abstractmethods__", set()):
+        with pytest.raises(ValueError, match="delta must be greater than zero."):
+            BaseKatzBonacich(delta=-1.5)
 
 
 # =====================================================================
@@ -34,7 +36,8 @@ def test_init_with_invalid_delta_raises_value_error():
 
 def test_prepare_system_with_directed_network_raises_error():
     # ARRANGE
-    kb = BaseKatzBonacich()
+    with patch.object(BaseKatzBonacich, "__abstractmethods__", set()):
+        kb = BaseKatzBonacich()
     mock_network = MagicMock(spec=SignedNetwork)
     mock_network.directed = True  
     
@@ -45,7 +48,8 @@ def test_prepare_system_with_directed_network_raises_error():
 
 def test_prepare_system_with_too_few_nodes_raises_error():
     # ARRANGE
-    kb = BaseKatzBonacich()
+    with patch.object(BaseKatzBonacich, "__abstractmethods__", set()):
+        kb = BaseKatzBonacich()
     mock_network = MagicMock(spec=SignedNetwork)
     mock_network.directed = False
     mock_network.number_of_nodes = 1  
@@ -58,7 +62,8 @@ def test_prepare_system_with_too_few_nodes_raises_error():
 @patch("signnet.utils.MatrixFactory.MatrixFactory.adjacency")
 def test_prepare_system_success(mock_adjacency):
     # ARRANGE
-    kb = BaseKatzBonacich()
+    with patch.object(BaseKatzBonacich, "__abstractmethods__", set()):
+        kb = BaseKatzBonacich()
     
     # network mock
     mock_network = MagicMock(spec=SignedNetwork)
@@ -90,7 +95,8 @@ def test_prepare_system_success(mock_adjacency):
 @patch("signnet.utils.MatrixFactory.MatrixFactory.adjacency")
 def test_prepare_system_fails_stability_check(mock_adjacency):
     # ARRANGE
-    kb = BaseKatzBonacich()
+    with patch.object(BaseKatzBonacich, "__abstractmethods__", set()):
+        kb = BaseKatzBonacich()
     
     # 2 nodes -> Delta = 1.0 / (2 * 2 - 2) = 0.5
     mock_network = MagicMock(spec=SignedNetwork)
@@ -111,10 +117,11 @@ def test_prepare_system_fails_stability_check(mock_adjacency):
 
 def test_prepare_core_system_with_empty_network_raises_error():
     # ARRANGE
+    with patch.object(BaseKatzBonacich, "__abstractmethods__", set()):
+        kb = BaseKatzBonacich()
     empty_edges = pd.DataFrame(columns=['source', 'target', 'sign'])
     network = SignedNetwork(edges=empty_edges, nodes=["A", "B"])
-    measure = BaseKatzBonacich()
 
-    # ACT & ASSERT - Da der Dekorator jetzt davor sitzt, erwarten wir den Fehler
+    # ACT & ASSERT
     with pytest.raises(ValueError, match="The network topology contains no edges"):
-        measure._prepare_core_system(network)
+        kb._prepare_core_system(network)

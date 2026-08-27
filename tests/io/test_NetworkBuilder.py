@@ -54,7 +54,7 @@ def test_load_and_build_network_edge_list_flow(mock_registries):
     file_buffer = "dummy_buffer"
     
     # ACT
-    result = load_and_build_network(
+    result = load_and_build_network.__wrapped__(
         file_buffer=file_buffer,
         file_type="csv",
         representation_type="Edge List",
@@ -91,7 +91,7 @@ def test_load_and_build_network_matrix_flow(mock_registries):
     file_buffer = "dummy_buffer"
 
     # ACT
-    result = load_and_build_network(
+    result = load_and_build_network.__wrapped__(
         file_buffer=file_buffer,
         file_type="CSV", 
         representation_type="Adjacency Matrix",
@@ -112,7 +112,7 @@ def test_load_and_build_network_matrix_flow(mock_registries):
 
 def test_load_and_build_network_unsupported_representation(mock_registries):
     with pytest.raises(ValueError, match="Unsupported network representation"):
-        load_and_build_network(
+        load_and_build_network.__wrapped__(
             file_buffer="buf",
             file_type="csv",
             representation_type="Invalid Type",
@@ -124,7 +124,7 @@ def test_load_and_build_network_unsupported_representation(mock_registries):
 
 def test_load_and_build_network_unsupported_file_type(mock_registries):
     with pytest.raises(ValueError, match="Unsupported file format configuration"):
-        load_and_build_network(
+        load_and_build_network.__wrapped__(
             file_buffer="buf",
             file_type="xml", 
             representation_type="Edge List",

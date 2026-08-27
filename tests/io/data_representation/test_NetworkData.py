@@ -1,6 +1,7 @@
 # test_NetworkData.py
 import pytest
 import pandas as pd
+from dataclasses import FrozenInstanceError
 
 from signnet.io.data_representation.NetworkData import NetworkData
 
@@ -39,7 +40,7 @@ def test_network_data_is_frozen_and_immutable():
 
     # ACT & ASSERT
     # try to override an attribute
-    with pytest.raises(TypeError, match="cannot assign to field"):
+    with pytest.raises(FrozenInstanceError, match="cannot assign to field"):
         network_data.nodes = ["X", "Y"]
 
     # try to expand with a new attribute

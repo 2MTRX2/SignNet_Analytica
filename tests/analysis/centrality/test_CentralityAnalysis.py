@@ -35,7 +35,7 @@ def test_compute_different_measures():
     
     centrality_analysis = CentralityAnalysis(centrality_measures)
 
-    expected_df = pd.concat([sd_result_df, pn_result_df, kb_bloch_result_df])
+    expected_df = pd.concat([sd_result_df, pn_result_df, kb_bloch_result_df], axis=1)
 
     # ACT 
     result_df = centrality_analysis.compute(mock_network)

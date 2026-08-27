@@ -11,13 +11,13 @@ def require_edges(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         network = None
-        
-        if 'network' in kwargs:
-            network = kwargs['network']
-            for arg in args:
-                if isinstance(arg, SignedNetwork):
-                    network = arg
-                    break
+
+        for arg in args:
+            if isinstance(arg, SignedNetwork):
+                network = arg
+                break
+        if network is None: 
+            network = kwargs.get('network')
 
         if network is not None and network.number_of_edges == 0:
             raise ValueError(
