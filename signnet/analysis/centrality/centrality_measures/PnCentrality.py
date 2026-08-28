@@ -56,7 +56,7 @@ class PnCentrality(CentralityMeasure):
 
         if max_eigenval > 0 and alpha >= (1.0 / max_eigenval):
             raise ValueError(
-                f"Alpha ({alpha}) is too large for matrix convergence with this specific dataset. "
+                f" PN-Centrality: Alpha ({alpha}) is too large for matrix convergence with this specific dataset. "
                 f"It must be smaller than 1 / |lambda_max| = {1.0 / max_eigenval:.4f}"
             )
 
