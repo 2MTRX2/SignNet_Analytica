@@ -11,12 +11,13 @@ def main():
     """Entry point of the Streamlit application."""
 
     st.set_page_config(
-        page_title="Signed Network Analysis",
-        page_icon="📊",
+        page_title="SignNet Analytica (Beta)",
+        page_icon="🌐",
         layout="wide",
     )
 
-    st.title("Signed Network Analysis Framework")
+    st.title("SignNet Analytica :blue[Beta]")
+    st.caption("Version 0.1.0-beta – Major UI restructuring and new features coming soon.")
 
     # ==================================================================
     # SECTION 1: DATA CONFIGURATION & LOADING

@@ -36,7 +36,7 @@ class BaseKatzBonacich(CentralityMeasure):
         eigenvalues = np.linalg.eigvals(A)
         max_eigenval = np.max(np.abs(eigenvalues))
         if max_eigenval > 0 and delta >= (1.0 / max_eigenval):
-            raise ValueError(f"Delta ({delta}) is too big for convergence.")
+            raise ValueError(f"KB-Centrality: Delta ({delta}) is too big for convergence.")
             
         I = np.eye(number_of_nodes)
         matrix_to_invert = I - (delta * A)
