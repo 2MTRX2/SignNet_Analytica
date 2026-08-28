@@ -48,9 +48,9 @@ def test_compute_matrix_convergence_error():
 
     # this network should trigger the constraint since the values grow with a factor of 20 and get discounted with an alpha of 0.25
     edges_data = {
-        "source": ["A", "B", "C", "D", "A", "C"],
-        "target": ["B", "C", "D", "A", "C", "B"],
-        "sign": [100.0, -500.0, 1000.0, -200.0, 800.0, -900.0]
+        "source": ["A", "A", "A", "A", "B", "B", "B", "C", "C", "D"],
+        "target": ["B", "C", "D", "E", "C", "D", "E", "D", "E", "E"],
+        "sign": [-1.0, -5.0, -10.0, -1.0, -2.0, -8.0, -1.0, -1.0, -1.0, -1.0]
     }
     df_edges = pd.DataFrame(edges_data)
 
@@ -67,8 +67,6 @@ def test_compute_matrix_convergence_error():
     )
 
     expected_msg = re.escape(raw_msg)
-
-    print(pn_centrality.compute)
 
     with pytest.raises(ValueError, match=expected_msg):
         pn_centrality.compute(network) 
