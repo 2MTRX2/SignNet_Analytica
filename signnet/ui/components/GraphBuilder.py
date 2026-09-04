@@ -26,6 +26,10 @@ def create_graphical_signed_network(network: SignedNetwork):
     # Convert the network into a networkx structre with an appropriate adapter
     G = NetworkXAdapter.to_networkx(network)
 
+    for node in G.nodes():
+        # changes the ID into a string for the correct recognition in the visual labeling
+        G.nodes[node]['label'] = str(node)
+
     # Looping over each node and defining the edge colour and edge style for each node
     for u, v, data in G.edges(data=True):
         sign = int(data.get('sign', 1))
