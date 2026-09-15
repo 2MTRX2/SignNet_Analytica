@@ -5,14 +5,21 @@ import pandas as pd
 
 from signnet.ui.components.centrality_selector import centrality_selector
 from signnet.ui.components.network_summary import network_summary
-from signnet.ui.components.parameter_config import configure_parameters
+from signnet.ui.components.centrality_measure_parameter_config import configure_centrality_measure_parameters
 from signnet.ui.components.correlation_component import render_correlation_analysis
+from signnet.ui.components.simulation_parameter_config import configure_topology_parameters
+from signnet.ui.components.simulation_topology_selector import simulation_topology_selector
 
 
 from signnet.analysis.centrality.CentralityAnalysis import CentralityAnalysis
 from signnet.analysis.centrality.CentralityRegistry import CentralityRegistry
+from signnet.analysis.simulation.SimulationEngine import SimulationEngine
+from signnet.analysis.simulation.TopologyRegistry import TopologyRegistry
+from signnet.analysis.simulation.NetworkBenchmarker import NetworkBenchmarker
+
 
 from signnet.models.SignedNetwork import SignedNetwork
+from signnet.models.NetworkGenerator import NetworkGenerator
 
 
 def show(network: SignedNetwork):
@@ -61,7 +68,7 @@ def show(network: SignedNetwork):
 
     if has_parameters:
         # Sets up the parameter input fields and their borders
-        runtime_parameters = configure_parameters(selected_names)
+        runtime_parameters = configure_centrality_measure_parameters(selected_names)
     else: 
         runtime_parameters = {}
 
@@ -138,8 +145,61 @@ def show(network: SignedNetwork):
         )
 
         st.divider()
-    
+
         # ==============================================================
         # CENTRALITY CORRELATION ANALYSIS
         # ==============================================================
         render_correlation_analysis(centrality_df=centrality_df)
+
+        # ==============================================================
+        # SIMULATION BENCHMARKING
+        # ==============================================================
+        st.subheader("Simulation Benchmarking")
+
+        simulation_engine = SimulationEngine(analysis_pipeline=CentralityAnalysis(measures=selected_measures).compute)
+
+        topology_options = TopologyRegistry.get_available_topologies()
+
+        selected_topology = simulation_topology_selector(available_topologies=topology_options)
+
+        global_parameters, kwargs_parameters = configure_topology_parameters(selected_topology=selected_topology)
+
+        start_sim = st.button("Run Simulation Pipeline", type="secondary")
+
+        if start_sim or "active_simulation_results" in st.session_state:
+            
+            if start_sim:
+                with st.spinner(f"Simulating {global_parameters['n_iterations']} networks..."):
+                    network_generator = NetworkGenerator(
+                        topology_name=selected_topology, 
+                        n=global_parameters["n"], 
+                        neg_ratio=global_parameters["neg_ratio"], 
+                        **kwargs_parameters
+                    )
+                    
+                    sim_result = simulation_engine.run(
+                        num_iterations=global_parameters["n_iterations"], 
+                        network_provider=network_generator.create_random_signed_network
+                    )
+                    st.session_state["active_simulation_results"] = sim_result
+            
+            simulation_result = st.session_state["active_simulation_results"]
+
+            actual_node_col = simulation_result.columns[1]
+            extremes_result = NetworkBenchmarker.analyze_network_extremes(df_raw_results=simulation_result, node_col=actual_node_col)
+            gini_result = NetworkBenchmarker.calculate_gini_coefficient(df_raw_results=simulation_result)
+
+            tab1, tab2 = st.tabs(["📊 Extreme Values Benchmark", "⚖️ Gini-Coefficient"])
+            
+            with tab1:
+                st.caption("Average benchmark values across all iterations (maxima, minima, and general mean).")
+                st.dataframe(extremes_result, use_container_width=True)
+            
+            with tab2:
+                st.caption("Average Gini-Coefficient per metric. Higher values indicate higher structural inequality.")
+                st.dataframe(gini_result, use_container_width=True)
+                
+                st.bar_chart(gini_result, x="metric_name", y="mean_gini_coefficient")
+
+        st.divider()
+    

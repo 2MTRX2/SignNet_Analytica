@@ -6,7 +6,7 @@ from signnet.io.LoadingRegistry import REPRESENTATION_REGISTRY
 from signnet.io.LoadingRegistry  import STRATEGY_REGISTRY
 
 # Caching of the parameters of the function and the returned object
-@st.cache_data(show_spinner="Processing and building signed network...")
+@st.cache_resource(show_spinner="Processing and building signed network...")
 def load_and_build_network(
     file_buffer, 
     file_type: str, 

@@ -8,32 +8,44 @@ class NetworkBenchmarker:
     """
 
     @staticmethod
-    def analyze_network_extremes(df_raw_results: pd.DataFrame) -> pd.DataFrame:
+    def analyze_network_extremes(df_raw_results: pd.DataFrame, node_col: str = "node") -> pd.DataFrame:
         """
         Analyses the maximum average, minimum average, and total average of the network. 
-        Analysiert die Maxima, Minima und Gesamtdurchschnitte des Netzwerks.
 
         Args:
-            df_raw_results (pd.DataFrame): Unaggregated raw data from `GenericSimulationEngine`.
-                Expects the columns 'iteration' and 'node'.
+            df_raw_results (pd.DataFrame): Unaggregated raw data from `SimulationEngine`.
+                Expects the column 'iteration' at the very first position (index 0) 
+                and a column for node identifiers matching `node_col`.
+            node_col (str, optional): The name of the column containing the node identifiers.
+                Defaults to "node".
 
         Returns:
-            pd.DataFrame: A companct table for each centrality metric which delivers
+            pd.DataFrame: A compact table for each centrality metric which delivers
                 three global key numbers: 
+                - 'metric_name': name of the analysed metric.
                 - 'mean_of_maxima': average of the highest values per iteration.
                 - 'mean_of_minima': average of the smallest values per iteration.
                 - 'mean_of_all_values': average over all values.
         
         Raises:
-            ValueError: If 'df_raw_results' is 'None' or empty, it cannot do any calculations.
+            ValueError: If `df_raw_results` is None or empty.
+            ValueError: If the column 'iteration' is missing.
+            ValueError: If the column 'iteration' is not located at the first position (index 0).
         """
         if df_raw_results is None or df_raw_results.empty:
             raise ValueError(
                 "The simulation raw data are empty and benchmarking cannot be done."
             )
 
+        if "iteration" not in df_raw_results.columns:
+            raise ValueError("Dataframe format is wrong: column 'iteration' not available.")
+
+        
+        if df_raw_results.columns[0] != "iteration":
+            raise ValueError("Structural error: 'iteration' must be the very first column!")
+
         # 1. determining dynamically the data columns
-        excluded_columns = ["iteration", "node"]
+        excluded_columns = ["iteration", node_col]
         metric_columns = [col for col in df_raw_results.columns if col not in excluded_columns]
 
         # 2. determining key numbers per iteration
@@ -57,26 +69,38 @@ class NetworkBenchmarker:
 
 
     @staticmethod
-    def calculate_gini_coefficient(df_raw_results: pd.DataFrame) -> pd.DataFrame:
+    def calculate_gini_coefficient(df_raw_results: pd.DataFrame, node_col: str = "node") -> pd.DataFrame:
         """
         Calculates the average Gini-coefficient per metric.
         
         Args:
             df_raw_results (pd.DataFrame): unaggregated raw data of the engine.
+            node_col (str, optional): The name of the column containing the node identifiers.
+                Defaults to "node".
             
         Returns:
             pd.DataFrame: table with average Gini-coefficients per metric.
 
         Raises:
             ValueError: If 'df_raw_results' is 'None' or empty, it cannot do any calculations.
+            ValueError: If the column 'iteration' is missing.
+            ValueError: If the column 'iteration' is not located at the first position (index 0).
         """
+
         if df_raw_results is None or df_raw_results.empty:
             raise ValueError(
                 "The simulation raw data are empty and benchmarking cannot be done."
             )
 
-        excluded = ["iteration", "node"]
-        metric_columns = [c for c in df_raw_results.columns if c not in excluded]
+        if "iteration" not in df_raw_results.columns:
+            raise ValueError("Dataframe format is wrong: column 'iteration' not available.")
+
+        
+        if df_raw_results.columns[0] != "iteration":
+            raise ValueError("Structural error: 'iteration' must be the very first column!")
+
+        excluded_columns = ["iteration", node_col]
+        metric_columns = [col for col in df_raw_results.columns if col not in excluded_columns]
         
         results = []
         
@@ -86,7 +110,7 @@ class NetworkBenchmarker:
             for _, df_it in df_raw_results.groupby("iteration"):
                 values = df_it[metric].to_numpy(dtype=float)
                 
-                # Normalisierung für negative Zentralitätswerte (z.B. Net-Degree)
+                # Normalisation for negative centrality measures (e.g. Net-Degree)
                 if np.any(values < 0): 
                     min_val = np.min(values)
                     max_val = np.max(values)
@@ -97,7 +121,7 @@ class NetworkBenchmarker:
                     gini_per_it.append(0.0)
                     continue
                     
-                # Mathematischer Gini-Algorithmus
+                # Gini algorithm
                 sorted_values = np.sort(values)
                 n = len(values)
                 index = np.arange(1, n + 1)
