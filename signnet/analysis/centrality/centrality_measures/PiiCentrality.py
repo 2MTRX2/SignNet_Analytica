@@ -26,7 +26,7 @@ class PiiCentrality(CentralityMeasure):
     """
 
     PARAMETERS = [
-        ParameterSpec(name="beta", label="Beta (PII)", type="float", default=-0.20, min_value=None, max_value=-0.00001, step=0.05),
+        ParameterSpec(name="beta", label="Beta (PII)", type="float", default=-0.20, min_value=None, max_value=-0.00001, step=0.01),
         ParameterSpec(name="max_distance", label="Max Distance", type="int", default=3, min_value=0, max_value=None, step=1)
     ]
 

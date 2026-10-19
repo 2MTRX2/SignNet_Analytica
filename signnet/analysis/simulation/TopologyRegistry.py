@@ -3,7 +3,20 @@ import networkx as nx
 
 class TopologyRegistry:
     _REGISTRY: Dict[str, Dict[str, Any]] = {
-        "Random network (Erdős-Rényi)": {
+        "Random network G(N, M) (Erdős-Rényi)": {
+            "func": nx.gnm_random_graph,
+            "params": {
+                "m": {
+                    "type": "int", 
+                    "label": "Total number of edges (M)", 
+                    "min": 1, 
+                    "max": lambda n, orig_m=None: int((n * (n - 1)) / 2) if n > 1 else 1, 
+                    "value": lambda n, orig_m=None: orig_m if orig_m is not None else min(10, int((n * (n - 1)) / 2)) if n > 1 else 1,
+                    "help": "Exactly M edges will be placed randomly among all possible node pairs."
+                }
+            }
+        }, 
+        "Random network G(N, p) (Erdős-Rényi)": {
             "func": nx.erdos_renyi_graph,
             "params": {
                 "p": {
@@ -15,7 +28,7 @@ class TopologyRegistry:
                     "help": "Probability that any given pair of nodes is connected by an edge."
                 }
             }
-        },
+        },       
         "Scale-Free (Barabási-Albert)": {
             "func": nx.barabasi_albert_graph,
             "params": {
@@ -23,8 +36,8 @@ class TopologyRegistry:
                     "type": "int", 
                     "label": "Number of new edges per step (m)", 
                     "min": 1, 
-                    "max": 10, 
-                    "value": 2,
+                    "max": lambda n, orig_m=None: n - 1,
+                    "value": lambda n, orig_m=None: min(2, n - 1) if n > 1 else 1,
                     "help": "Number of edges to attach from a new node to existing nodes."
                 }
             }
@@ -36,8 +49,8 @@ class TopologyRegistry:
                     "type": "int", 
                     "label": "Neighbours inside the ring (k)", 
                     "min": 2, 
-                    "max": 20, 
-                    "value": 4,
+                    "max": lambda n, org_m=None: (n - 2) if (n % 2 == 0) else (n - 1), 
+                    "value": lambda n, org_m=None: min(4, (n - 2) if (n % 2 == 0) else (n - 1)) if n > 4 else 2,
                     "help": "Each node is initially connected to its k nearest neighbours in a ring topology."
                 },
                 "p": {

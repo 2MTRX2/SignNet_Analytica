@@ -162,14 +162,36 @@ def show(network: SignedNetwork):
 
         selected_topology = simulation_topology_selector(available_topologies=topology_options)
 
-        global_parameters, kwargs_parameters = configure_topology_parameters(selected_topology=selected_topology)
+        global_parameters, kwargs_parameters = configure_topology_parameters(selected_topology=selected_topology, number_of_nodes=network.number_of_nodes, number_of_edges=network.number_of_edges)
+      
+        # Base string with original network properties
+        hash_components_simulation = [
+            f"net_nodes_{len(network.nodes)}_edges_{len(network.edges)}",
+            f"sim_topology_{selected_topology}",
+            f"sim_n_{global_parameters['n']}",
+            f"sim_negratio_{global_parameters['neg_ratio']}",
+            f"sim_iters_{global_parameters['n_iterations']}"
+        ]
+        
+        # Add topology-specific kwargs to the hash (e.g., m or p values)
+        for k_name, k_val in sorted(kwargs_parameters.items()):
+            hash_components_simulation.append(f"kw_{k_name}:{k_val}")
+        
+        # Add metric configurations
+        for name in sorted(selected_names):
+            hash_components_simulation.append(name)
+        
+            if name in runtime_parameters:
+                for p_name, p_val in sorted(runtime_parameters[name].items()):
+                    hash_components_simulation.append(f"{p_name}:{p_val}")
+                    
+        expected_state_key_simulation = f"params_{'_'.join(hash_components_simulation)}"
 
-        start_sim = st.button("Run Simulation Pipeline", type="secondary")
-
-        if start_sim or "active_simulation_results" in st.session_state:
-            
-            if start_sim:
-                with st.spinner(f"Simulating {global_parameters['n_iterations']} networks..."):
+        
+        if st.button("Run Simulation Pipeline", type="secondary"):
+            # Wrap execution in a native spinner for complex network simulation
+            with st.spinner(f"Simulating {global_parameters['n_iterations']} networks..."):
+                try:
                     network_generator = NetworkGenerator(
                         topology_name=selected_topology, 
                         n=global_parameters["n"], 
@@ -182,24 +204,122 @@ def show(network: SignedNetwork):
                         network_provider=network_generator.create_random_signed_network
                     )
                     st.session_state["active_simulation_results"] = sim_result
-            
-            simulation_result = st.session_state["active_simulation_results"]
+                    st.session_state["current_param_hash_simulation"] = expected_state_key_simulation
+                except ValueError as val_ex:
+                    st.error(f"Mathematical Constraint Error:\n\n{val_ex}")
+                except Exception as ex:
+                    st.error(f"Failed to run analysis:\n\n{ex}")
 
-            actual_node_col = simulation_result.columns[1]
-            extremes_result = NetworkBenchmarker.analyze_network_extremes(df_raw_results=simulation_result, node_col=actual_node_col)
+        # ------------------------------------------------------------------
+        # RENDER RESULTS TABLE IF A RESULT IS IN THE CURRENT SESSION STATE OF THE SIMULATION
+        # ------------------------------------------------------------------
+        # If there is any result in the session state, the results get displayed
+        if "active_simulation_results" in st.session_state:
+            if st.session_state.get("current_param_hash_simulation") != expected_state_key_simulation:
+                st.warning("You changed parameters above. Click 'Run Simulation Pipeline' to update the data, or proceed with the current results below.")
+                is_stale = True
+            else: 
+                is_stale = False
+
+            # Getting current results
+            simulation_result  = st.session_state["active_simulation_results"]
+
+            id_column = simulation_result.columns[1]
+            extremes_result = NetworkBenchmarker.analyze_network_extremes(df_raw_results=simulation_result, node_col=id_column)
             gini_result = NetworkBenchmarker.calculate_gini_coefficient(df_raw_results=simulation_result)
 
+            # Dynamic meta-data extraction
+            meta_parts = [
+                f"Topo: {selected_topology}",
+                f"N: {global_parameters['n']}",
+                f"Iter: {global_parameters['n_iterations']}",
+                f"Neg_Ratio: {global_parameters['neg_ratio']}"
+            ]
+            for param_name, param_value in kwargs_parameters.items():
+                meta_parts.append(f"{param_name}: {param_value}")
+                
+            meta_string = " | ".join(meta_parts)
+
+            # Greyscaling of result df when current parameters are not coherent with displayed results
+            if is_stale:
+                extremes_styled_df = extremes_result.style.map(lambda _: "color: rgba(120, 120, 120, 0.5);")
+                gini_styled_df = gini_result.style.map(lambda _: "color: rgba(120, 120, 120, 0.5);")
+            else:
+                extremes_styled_df = extremes_result
+                gini_styled_df = gini_result
+
+            # Adding meta-data to the download file
+            csv_extremes_bytes = (meta_string + "\n" + extremes_result.reset_index().to_csv(index=False)).encode("utf-8")
+            csv_gini_bytes = (meta_string + "\n" + gini_result.reset_index().to_csv(index=False)).encode("utf-8")
+
+            # Ui tabs
             tab1, tab2 = st.tabs(["📊 Extreme Values Benchmark", "⚖️ Gini-Coefficient"])
             
             with tab1:
                 st.caption("Average benchmark values across all iterations (maxima, minima, and general mean).")
-                st.dataframe(extremes_result, use_container_width=True)
+                st.dataframe(extremes_styled_df, use_container_width=True)
+
+                # Download button to download df inclusive meta-data
+                st.download_button(
+                    label="Download Extreme Values (CSV) (inclusive Meta-Data)",
+                    data=csv_extremes_bytes,
+                    file_name=f"sim_extremes_{selected_topology.lower().replace(' ', '_')}.csv",
+                    mime="text/csv",
+                    key="download_extremes_btn_final"
+                )
+
+                if "active_centrality_results" in st.session_state:
+                    st.subheader("Empirical Network Metrics Summary")
+                    st.caption("Aggregated baseline values (maximum, minimum, and mean) computed directly on your real input network.")
+
+                    if st.session_state.get("current_param_hash") != expected_state_key:
+                        st.warning("You changed parameters above. Click 'Run Analysis' to update the empirical data, or proceed with the current values below.")
+                        is_centrality_stale = True
+                    else: 
+                        is_centrality_stale = False
+
+                    # Data loading
+                    centrality_df = st.session_state["active_centrality_results"]
+
+                    numeric_cols = [col for col in centrality_df.columns] 
+
+                    # Calculations of aggregations
+                    empirical_summary = pd.DataFrame({
+                        "maxima": centrality_df[numeric_cols].max(),
+                        "minima": centrality_df[numeric_cols].min(),
+                        "mean_of_all_values": centrality_df[numeric_cols].mean()
+                    })
+                    
+                    # Index description
+                    empirical_summary.index.name = "metric_name"
+
+                    # Greyscaling of result df when current parameters are not coherent with displayed results
+                    if is_centrality_stale:
+                        empirical_styled_df = empirical_summary.style.map(lambda _: "color: rgba(120, 120, 120, 0.5);")
+                    else:
+                        empirical_styled_df = empirical_summary
+
+                    # Display of the df
+                    st.dataframe(empirical_styled_df, use_container_width=True)
+                    
             
             with tab2:
                 st.caption("Average Gini-Coefficient per metric. Higher values indicate higher structural inequality.")
-                st.dataframe(gini_result, use_container_width=True)
-                
-                st.bar_chart(gini_result, x="metric_name", y="mean_gini_coefficient")
+                st.dataframe(gini_styled_df, use_container_width=True)
+
+                # Download button to download df inclusive meta-data
+                st.download_button(
+                    label="Download Gini Coefficients (CSV) (inclusive Meta-Data)",
+                    data=csv_gini_bytes,
+                    file_name=f"sim_gini_{selected_topology.lower().replace(' ', '_')}.csv",
+                    mime="text/csv",
+                    key="download_gini_btn_final"
+                )
+
+                # Column chart of Gini-coefficient
+                chart_df = gini_result.reset_index()
+                st.bar_chart(chart_df, x="metric_name", y="mean_gini_coefficient")
+
 
         st.divider()
-    
+

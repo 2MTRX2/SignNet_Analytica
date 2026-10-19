@@ -4,7 +4,7 @@ import streamlit as st
 
 from signnet.analysis.simulation.TopologyRegistry import TopologyRegistry
 
-def configure_topology_parameters(selected_topology: str, number_of_nodes: int = None, neg_ratio_val: float = None) -> Dict[str, Any]: 
+def configure_topology_parameters(selected_topology: str, number_of_nodes: int = None, neg_ratio_val: float = None, number_of_edges: int = None) -> Dict[str, Any]: 
     """Dynamically renders Streamlit input widgets for the chosen topology's parameters.
 
     Iterates through the parameters defined in the TopologyRegistry for the 
@@ -30,6 +30,7 @@ def configure_topology_parameters(selected_topology: str, number_of_nodes: int =
     n_iterations = st.number_input(
         label="Number of Iterations",
         min_value=1,
+        max_value=1000,
         value= 100,
         step=1
     )
@@ -48,7 +49,7 @@ def configure_topology_parameters(selected_topology: str, number_of_nodes: int =
         min_value=0.0,
         max_value=1.0,
         value=neg_ratio_val or 0.1,
-        step=0.05
+        step=0.01
     )
     global_parameters["neg_ratio"] = neg_ratio
 
@@ -58,9 +59,17 @@ def configure_topology_parameters(selected_topology: str, number_of_nodes: int =
 
     for param_name, config in topo_params.items():
         
-        # Sicherstellen, dass optionale min/max Werte sicher ausgelesen werden
-        min_val = config.get("min", None)
-        max_val = config.get("max", None)
+        raw_min = config.get("min")
+        raw_max = config.get("max")
+        raw_val = config.get("value")
+        
+        # dynamic adaption if it is lambda function
+        min_val = raw_min(n, number_of_edges) if callable(raw_min) else raw_min
+        max_val = raw_max(n, number_of_edges) if callable(raw_max) else raw_max
+        default_val = raw_val(n, number_of_edges) if callable(raw_val) else raw_val
+        
+        if max_val is not None:
+            default_val = min(default_val, max_val)
         
         if config["type"] == "float":
             val = st.slider(
@@ -72,19 +81,32 @@ def configure_topology_parameters(selected_topology: str, number_of_nodes: int =
             )
             
         elif config["type"] == "int":
-            # INTELLIGENTER SCHUTZ: Wenn das Modell Barabási-Albert ist und der Parameter 'm' heisst,
-            # darf m niemals grösser oder gleich n sein. Wir limitieren das UI hier live!
-            if selected_topology == "Scale-Free (Barabási-Albert)" and param_name == "m":
-                max_val = n - 1
+            safe_min = int(min_val) if min_val is not None else None
+            safe_max = int(max_val) if max_val is not None else None
+            raw_val = int(default_val) if default_val is not None else 10
             
+            safe_val = raw_val
+            if safe_min is not None:
+                safe_val = max(safe_min, safe_val)
+            if safe_max is not None:
+                if safe_min is not None and safe_max < safe_min:
+                    safe_max = safe_min
+                safe_val = min(safe_max, safe_val)
+
+            # DIE LÖSUNG: Ein dynamischer Key zwingt Streamlit, das Widget neu zu bauen.
+            # Er setzt sich aus der Topologie, dem Parameternamen und den aktuellen Grenzen zusammen.
+            widget_key = f"int_{selected_topology}_{param_name}_min_{safe_min}_max_{safe_max}"
+
             val = st.number_input(
                 label=config["label"],
-                min_value=min_val,
-                max_value=max_val,
-                value=min(config["value"], max_val) if max_val is not None else config["value"],
+                min_value=safe_min,
+                max_value=safe_max,
+                value=safe_val,
                 step=1,
-                help=config.get("help", "")
+                help=config.get("help", ""),
+                key=widget_key 
             )
+
             
         kwargs_parameters[param_name] = val
 
