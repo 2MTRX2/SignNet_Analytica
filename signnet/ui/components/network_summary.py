@@ -38,3 +38,5 @@ def network_summary(network: SignedNetwork):
         "Directed",
         "Yes" if network.directed else "No",
     )
+
+    st.divider()
