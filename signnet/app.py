@@ -17,7 +17,7 @@ def main():
         menu_items={
             'Get Help': 'https://github.com/2MTRX2/SignNet_Analytica',
             'Report a bug': 'https://github.com/2MTRX2/SignNet_Analytica/issues',
-            'About': "### SignNet Analytica v0.1.0-beta\nThis is a framework for Signed Network Analysis. Major UI updates and features like stability and efficiency parameters are coming soon!"
+            'About': "### SignNet Analytica v0.2.0-beta\nThis is a framework for Signed Network Analysis. Major UI updates and features like stability and efficiency parameters are coming soon!"
         }
     )
 
