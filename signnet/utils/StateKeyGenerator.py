@@ -1,5 +1,4 @@
 # StateKeyGenerator.py
-
 from signnet.models.SignedNetwork import SignedNetwork
 
 from typing import Any, Dict, List, Optional

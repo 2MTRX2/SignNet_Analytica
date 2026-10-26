@@ -11,8 +11,9 @@ class SimulationEngine:
         analysis_pipeline (Callable[[SignedNetwork], pd.DataFrame]): Function or bounded method
             to an object (e.g. CentralityAnalysis.compute), which gets executed each iteration. 
     """
-    def __init__(self, analysis_pipeline: Callable[[SignedNetwork], pd.DataFrame]):
+    def __init__(self, analysis_pipeline: Callable[[SignedNetwork], pd.DataFrame], default_index_label: str = "node") -> pd.DataFrame:
         self.analysis_pipeline = analysis_pipeline
+        self.default_index_label = default_index_label
 
     def run(
         self, 
@@ -56,7 +57,7 @@ class SimulationEngine:
             df_step = self.analysis_pipeline(network)
             
             df_step = df_step.copy()
-            index_label = df_step.index.name or "node"
+            index_label = df_step.index.name or self.default_index_label
             df_step = df_step.reset_index(names=index_label)
             df_step.insert(0, "iteration", iteration)
             all_iteration_data.append(df_step)

@@ -1,3 +1,4 @@
+# TopologyRegistry.py
 from typing import Any, Dict
 import networkx as nx
 
@@ -49,8 +50,8 @@ class TopologyRegistry:
                     "type": "int", 
                     "label": "Neighbours inside the ring (k)", 
                     "min": 2, 
-                    "max": lambda n, org_m=None: (n - 2) if (n % 2 == 0) else (n - 1), 
-                    "value": lambda n, org_m=None: min(4, (n - 2) if (n % 2 == 0) else (n - 1)) if n > 4 else 2,
+                    "max": lambda n, orig_m=None: (n - 2) if (n % 2 == 0) else (n - 1), 
+                    "value": lambda n, orig_m=None: min(4, (n - 2) if (n % 2 == 0) else (n - 1)) if n > 4 else 2,
                     "help": "Each node is initially connected to its k nearest neighbours in a ring topology."
                 },
                 "p": {

@@ -1,5 +1,4 @@
 # centrality_page.py
-
 import streamlit as st
 
 from signnet.ui.components.centrality_selector import centrality_selector

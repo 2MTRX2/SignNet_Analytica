@@ -9,6 +9,30 @@ from signnet.models.SignedNetwork import SignedNetwork
 from signnet.analysis.simulation.TopologyRegistry import TopologyRegistry
 
 class NetworkGenerator: 
+    """
+    A generator for creating synthetic signed networks based on registered topologies.
+
+    This class acts as a factory for artificial graph structures. It combines 
+    unsigned structural topologies from NetworkX with a stochastic distribution 
+    of positive and negative edge signs based on a specified conflict ratio.
+
+    Attributes:
+        topology_name (str): The name of the network topology to look up in the 
+            `TopologyRegistry`.
+        n (int): The total number of nodes in the generated network. Must be at 
+            least 3.
+        neg_ratio (float): The relative fraction of negative edges (conflict rate) 
+            in the network. Must be bounded between 0.0 and 1.0.
+        kwargs (Dict[str, Any]): Additional topology-specific configuration 
+            parameters forwarded directly to the underlying NetworkX generation 
+            function (e.g., `p`, `k`, or `m`).
+
+    Raises:
+        ValueError: If `topology_name` is not found within the `TopologyRegistry`.
+        ValueError: If the number of nodes `n` is less than 3.
+        ValueError: If `neg_ratio` falls outside the valid range of [0.0, 1.0].
+    """
+
     def __init__(self, topology_name: str, n: int, neg_ratio: float, **kwargs: Any):
         if topology_name not in TopologyRegistry.get_available_topologies():
             raise ValueError(

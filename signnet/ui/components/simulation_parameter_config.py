@@ -3,6 +3,7 @@ from typing import Any, Dict
 import streamlit as st
 
 from signnet.analysis.simulation.TopologyRegistry import TopologyRegistry
+from signnet.utils.StateKeyGenerator import StateKeyGenerator
 
 def configure_topology_parameters(selected_topology: str, number_of_nodes: int = None, neg_ratio_val: float = None, number_of_edges: int = None) -> Dict[str, Any]: 
     """Dynamically renders Streamlit input widgets for the chosen topology's parameters.
@@ -93,9 +94,8 @@ def configure_topology_parameters(selected_topology: str, number_of_nodes: int =
                     safe_max = safe_min
                 safe_val = min(safe_max, safe_val)
 
-            # DIE LÖSUNG: Ein dynamischer Key zwingt Streamlit, das Widget neu zu bauen.
-            # Er setzt sich aus der Topologie, dem Parameternamen und den aktuellen Grenzen zusammen.
-            widget_key = f"int_{selected_topology}_{param_name}_min_{safe_min}_max_{safe_max}"
+
+            widget_key = (StateKeyGenerator(prefix="int").add_flat_param("param", param_name).add_flat_param("min", safe_min).add_flat_param("max", safe_max).generate())
 
             val = st.number_input(
                 label=config["label"],

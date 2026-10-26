@@ -1,5 +1,4 @@
 # simulation_component.py
-
 import streamlit as st
 import pandas as pd
 
@@ -23,7 +22,7 @@ from signnet.utils.StateKeyGenerator import StateKeyGenerator
 def render_benchmarking_centrality_analysis(network: SignedNetwork, centrality_df: pd.DataFrame, selected_measures: list, selected_names: list, runtime_parameters: list, current_state_key_centrality: str, expected_state_key_centrality: str, button_centrality_name:str): 
         st.subheader("Simulation Benchmarking")
 
-        simulation_engine = SimulationEngine(analysis_pipeline=CentralityAnalysis(measures=selected_measures).compute)
+        simulation_engine = SimulationEngine(analysis_pipeline=CentralityAnalysis(measures=selected_measures).compute, default_index_label="node")
 
         topology_options = TopologyRegistry.get_available_topologies()
 
@@ -208,6 +207,9 @@ def render_benchmarking_centrality_analysis(network: SignedNetwork, centrality_d
                         empirical_styled_df = grayout_df(session_state_df=empirical_summary, is_stale=bool_is_stale)
 
                         st.dataframe(empirical_styled_df, use_container_width=True)
+
+                        chart_df = empirical_summary.reset_index()
+                        st.bar_chart(chart_df, x="metric_name", y="gini_coefficient")
 
                     except ValueError as e:
                         st.error(f"Calculation Error: {e}")

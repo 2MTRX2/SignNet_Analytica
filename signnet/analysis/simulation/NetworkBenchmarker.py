@@ -8,7 +8,7 @@ class NetworkBenchmarker:
     """
 
     @staticmethod
-    def analyze_network_extremes(df_raw_results: pd.DataFrame, node_col: str = "node") -> pd.DataFrame:
+    def analyze_network_extremes(df_raw_results: pd.DataFrame, node_col: str = "node", iteration_col: str = "iteration") -> pd.DataFrame:
         """
         Analyses the maximum average, minimum average, and total average of the network. 
 
@@ -37,19 +37,19 @@ class NetworkBenchmarker:
                 "The simulation raw data are empty and benchmarking cannot be done."
             )
 
-        if "iteration" not in df_raw_results.columns:
+        if iteration_col not in df_raw_results.columns:
             raise ValueError("Dataframe format is wrong: column 'iteration' not available.")
 
-        
-        if df_raw_results.columns[0] != "iteration":
-            raise ValueError("Structural error: 'iteration' must be the very first column!")
+        if node_col not in df_raw_results.columns:
+            raise ValueError(f"Dataframe format is wrong: column '{node_col}' not available.")
+
 
         # 1. determining dynamically the data columns
-        excluded_columns = ["iteration", node_col]
+        excluded_columns = [iteration_col, node_col]
         metric_columns = [col for col in df_raw_results.columns if col not in excluded_columns]
 
         # 2. determining key numbers per iteration
-        grouped_by_iteration = df_raw_results.groupby("iteration")[metric_columns]
+        grouped_by_iteration = df_raw_results.groupby(iteration_col)[metric_columns]
         
         iteration_maxima = grouped_by_iteration.max()
         iteration_minima = grouped_by_iteration.min()
@@ -69,7 +69,7 @@ class NetworkBenchmarker:
 
 
     @staticmethod
-    def calculate_gini_coefficient(df_raw_results: pd.DataFrame, node_col: str = "node") -> pd.DataFrame:
+    def calculate_gini_coefficient(df_raw_results: pd.DataFrame, node_col: str = "node", iteration_col: str = "iteration") -> pd.DataFrame:
         """
         Calculates the average Gini-coefficient per metric.
         
@@ -92,14 +92,14 @@ class NetworkBenchmarker:
                 "The simulation raw data are empty and benchmarking cannot be done."
             )
 
-        if "iteration" not in df_raw_results.columns:
+        if iteration_col not in df_raw_results.columns:
             raise ValueError("Dataframe format is wrong: column 'iteration' not available.")
 
-        
-        if df_raw_results.columns[0] != "iteration":
-            raise ValueError("Structural error: 'iteration' must be the very first column!")
+        if node_col not in df_raw_results.columns:
+            raise ValueError(f"Dataframe format is wrong: column '{node_col}' not available.")
 
-        excluded_columns = ["iteration", node_col]
+
+        excluded_columns = [iteration_col, node_col]
         metric_columns = [col for col in df_raw_results.columns if col not in excluded_columns]
         
         results = []
@@ -107,7 +107,7 @@ class NetworkBenchmarker:
         for metric in metric_columns:
             gini_per_it = []
             
-            for _, df_it in df_raw_results.groupby("iteration"):
+            for _, df_it in df_raw_results.groupby(iteration_col):
                 values = df_it[metric].to_numpy(dtype=float)
                 
                 # Normalisation for negative centrality measures (e.g. Net-Degree)
