@@ -17,7 +17,7 @@ def test_paramters_property():
     pii_centrality = PiiCentrality(beta=-0.2, max_distance=3)
     
     # ACT & ASSERT
-    assert pii_centrality.PARAMETERS[0] == ParameterSpec(name="beta", label="Beta (PII)", type="float", default=-0.20, min_value=None, max_value=-0.00001, step=0.05)
+    assert pii_centrality.PARAMETERS[0] == ParameterSpec(name="beta", label="Beta (PII)", type="float", default=-0.20, min_value=None, max_value=-0.00001, step=0.01)
     assert pii_centrality.PARAMETERS[1] == ParameterSpec(name="max_distance", label="Max Distance", type="int", default=3, min_value=0, max_value=None, step=1)
 
 def test_beta_initialisation_error(): 

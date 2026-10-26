@@ -1,18 +1,20 @@
 # centrality_page.py
-
 import streamlit as st
-import pandas as pd
 
 from signnet.ui.components.centrality_selector import centrality_selector
 from signnet.ui.components.network_summary import network_summary
-from signnet.ui.components.parameter_config import configure_parameters
+from signnet.ui.components.centrality_measure_parameter_config import configure_centrality_measure_parameters
 from signnet.ui.components.correlation_component import render_correlation_analysis
-
+from signnet.ui.components.simulation_component import render_benchmarking_centrality_analysis
+from signnet.ui.components.grayout_stale_df import grayout_df
+from signnet.ui.components.grayout_stale_df import is_stale
 
 from signnet.analysis.centrality.CentralityAnalysis import CentralityAnalysis
 from signnet.analysis.centrality.CentralityRegistry import CentralityRegistry
 
 from signnet.models.SignedNetwork import SignedNetwork
+
+from signnet.utils.StateKeyGenerator import StateKeyGenerator
 
 
 def show(network: SignedNetwork):
@@ -26,6 +28,7 @@ def show(network: SignedNetwork):
     4. Execute the mathematical analysis using the selected algorithms.
     5. Render and inspect the final data results in a persistent table view.
     6. Perform a correlation analysis including the corresponding p-values.
+    7. Perform a benchmark simulation with a given topology as parameters
 
     Args:
         network (SignedNetwork): The active network domain model containing 
@@ -35,8 +38,6 @@ def show(network: SignedNetwork):
     # RENDER NETWROK STRUCTURAL SUMMARY
     # ------------------------------------------------------------------
     network_summary(network)
-
-    st.divider()
 
     # ------------------------------------------------------------------
     # DEFINE AND COLLECT SELECTED CENTRALITY MEASURES
@@ -61,7 +62,7 @@ def show(network: SignedNetwork):
 
     if has_parameters:
         # Sets up the parameter input fields and their borders
-        runtime_parameters = configure_parameters(selected_names)
+        runtime_parameters = configure_centrality_measure_parameters(selected_names)
     else: 
         runtime_parameters = {}
 
@@ -79,7 +80,6 @@ def show(network: SignedNetwork):
             
         selected_measures.append(instance)
 
-
     # ------------------------------------------------------------------
     # EXECUTE ANALYSIS AND MANAGE SESSION STATE PERSISTANCE
     # ------------------------------------------------------------------
@@ -88,24 +88,22 @@ def show(network: SignedNetwork):
     # Generate a unique hash key containing network numbers of nodes and edges 
     # and the selected centrality measures including their parameters. 
     # This automatically clears old results from the screen if parameters or metrics change.
-    hash_components = [f"net_nodes_{len(network.nodes)}_edges_{len(network.edges)}"]
-    
-    for name in sorted(selected_names):
-        hash_components.append(name)
-       
-        if name in runtime_parameters:
-            for p_name, p_val in sorted(runtime_parameters[name].items()):
-                hash_components.append(f"{p_name}:{p_val}")
-                
-    expected_state_key = f"params_{'_'.join(hash_components)}"
-    
-    if st.button("Run Analysis", type="primary"):
+    expected_state_key_centrality = (
+        StateKeyGenerator(prefix="params")
+        .add_network(network)
+        .add_measures_with_parameters(selected_names, runtime_parameters)
+        .generate()
+    )
+
+    button_centrality_name = "Run Analysis"
+
+    if st.button(button_centrality_name, type="primary"):
         # Wrap execution in a native spinner for complex network operations
         with st.spinner("Calculating selected metrics..."):
             try:
                 analysis = CentralityAnalysis(measures=selected_measures)
                 st.session_state["active_centrality_results"] = analysis.compute(network)
-                st.session_state["current_param_hash"] = expected_state_key
+                st.session_state["current_param_hash"] = expected_state_key_centrality
             except ValueError as val_ex:
                 st.error(f"Mathematical Constraint Error:\n\n{val_ex}")
             except Exception as ex:
@@ -116,30 +114,30 @@ def show(network: SignedNetwork):
     # ------------------------------------------------------------------
     # If there is any result in the session state, the results get displayed
     if "active_centrality_results" in st.session_state:
-        if st.session_state.get("current_param_hash") != expected_state_key:
-            st.warning("You changed parameters above. Click 'Run Analysis' to update the data, or proceed with the current results below.")
-            is_stale = True
-        else: 
-            is_stale = False
-
-        st.subheader("Results")
-
+        current_hash = st.session_state.get("current_param_hash")
         centrality_df = st.session_state["active_centrality_results"]
 
-        # If the result doesn't apply to the current parameters, the dataframe is in gray style
-        if is_stale:
-            styled_df = centrality_df.style.map(lambda _: "color: rgba(120, 120, 120, 0.5);")
-        else:
-            styled_df = centrality_df
-
+        bool_is_stale = is_stale(current_hash=current_hash, expected_hash=expected_state_key_centrality, button=button_centrality_name)
+        st.subheader("Results")
+        styled_df = grayout_df(session_state_df=centrality_df, is_stale=bool_is_stale)
+        
         st.dataframe(
             styled_df,
             use_container_width=True,
         )
 
         st.divider()
-    
+
         # ==============================================================
         # CENTRALITY CORRELATION ANALYSIS
         # ==============================================================
         render_correlation_analysis(centrality_df=centrality_df)
+
+        # ==============================================================
+        # SIMULATION BENCHMARKING
+        # ==============================================================
+        render_benchmarking_centrality_analysis(network=network, centrality_df=centrality_df, selected_measures=selected_measures, 
+                                                selected_names=selected_names, runtime_parameters=runtime_parameters, current_state_key_centrality=current_hash, 
+                                                expected_state_key_centrality=expected_state_key_centrality, button_centrality_name=button_centrality_name)
+
+

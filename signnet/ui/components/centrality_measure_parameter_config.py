@@ -1,10 +1,10 @@
-# parameter_config.py
+# centrality_measure_parameter_config.py
 import streamlit as st
 
 from signnet.analysis.centrality.CentralityRegistry import CentralityRegistry
 
 
-def configure_parameters(selected_names: list[str]): 
+def configure_centrality_measure_parameters(selected_names: list[str]): 
     """Dynamically renders Streamlit input widgets for chosen centrality measures' parameters.
 
     Iterates through the parameters defined in each class for each 
