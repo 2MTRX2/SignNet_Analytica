@@ -25,4 +25,4 @@ class PearsonStrategy(CorrelationStrategy):
                 - The statistical two-tailed p-value representing the significance of the linear association.
         """
         coeff, p_val = pearsonr(x, y)
-        return float(coeff), float(p_val)
+        return float(coeff), float(p_val)  # type: ignore[argument-type]

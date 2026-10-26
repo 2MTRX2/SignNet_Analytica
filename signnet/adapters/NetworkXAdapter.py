@@ -1,5 +1,6 @@
 # NetworkXAdapter.py
 import networkx as nx
+from typing import Any
 
 from signnet.models.SignedNetwork import SignedNetwork
 
@@ -14,14 +15,14 @@ class NetworkXAdapter:
     @staticmethod
     def to_networkx(network: SignedNetwork) -> nx.Graph:
 
-        G = nx.DiGraph() if network.directed else nx.Graph()
+        G: nx.Graph[Any]  = nx.DiGraph() if network.directed else nx.Graph()
 
         nx.from_pandas_edgelist(
             network.edges,
             source='source',
             target='target',
             edge_attr=True,
-            create_using=G
+            create_using=G # type: ignore[argument-type]
         )
 
         # add nodes which are not connected to the network but are part of the network

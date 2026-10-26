@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
+import pandas as pd
 
 from signnet.models.SignedNetwork import SignedNetwork
 
@@ -36,7 +37,7 @@ class CentralityMeasure(ABC):
         pass
 
     @abstractmethod
-    def compute(self, network: SignedNetwork):
+    def compute(self, network: SignedNetwork) -> pd.DataFrame:
         """Executes the centrality calculation for the given signed network.
 
         Args:

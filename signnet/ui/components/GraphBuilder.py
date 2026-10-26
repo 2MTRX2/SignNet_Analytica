@@ -44,7 +44,7 @@ def create_graphical_signed_network(network: SignedNetwork):
         data['weight'] = abs(sign)
 
     # Instantiate a Pyvis network
-    net = Network(height="500px", width="100%", bgcolor="#ffffff", font_color="#000000")
+    net = Network(height="500px", width="100%", bgcolor="#ffffff", font_color="#000000")  # type: ignore[argument-type]
 
     # Using the networkx as an input for the Pyvis network
     net.from_nx(G)

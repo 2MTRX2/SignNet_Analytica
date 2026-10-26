@@ -1,6 +1,7 @@
 # correlation_component.py
 import pandas as pd
 import streamlit as st
+from typing import cast 
 
 from signnet.analysis.correlations.CorrelationAnalysis import CorrelationAnalysis
 from signnet.analysis.correlations.CorrelationRegistry import CorrelationRegistry
@@ -33,7 +34,7 @@ def highlight_p_values(df: pd.DataFrame, alpha_level: float) -> pd.DataFrame:
                 style_df.loc[idx, col] = (
                     "color: darkgray; font-style: italic;"
                 )
-            elif df.loc[idx, col] < alpha_level:
+            elif cast(float, df.loc[idx, col]) < alpha_level:
                 style_df.loc[idx, col] = "color: green; font-weight: bold;"
     return style_df
 

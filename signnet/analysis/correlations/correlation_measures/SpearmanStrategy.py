@@ -24,4 +24,4 @@ class SpearmanStrategy(CorrelationStrategy):
                 - The statistical two-tailed p-value representing the significance of the monotonic association.
         """
         coeff, p_val = spearmanr(x, y)
-        return float(coeff), float(p_val)
+        return float(coeff), float(p_val)  # type: ignore[argument-type]

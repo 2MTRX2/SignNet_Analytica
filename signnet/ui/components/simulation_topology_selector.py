@@ -3,7 +3,7 @@
 import streamlit as st
 
 
-def simulation_topology_selector(available_topologies: list[str]) -> list[str]:
+def simulation_topology_selector(available_topologies: list[str]) -> str:
     """
     Displays a radio element containing all available centrality measure names
     and returns the name chosen by the user.

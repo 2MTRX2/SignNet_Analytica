@@ -1,5 +1,5 @@
 # uploaded_network_selector.py
-from typing import Optional
+from typing import Optional, cast, Any
 import streamlit as st
 
 from signnet.models.SignedNetwork import SignedNetwork
@@ -66,11 +66,13 @@ def uploaded_network_selector() -> Optional[SignedNetwork]:
 
         # Read the file to list the available columns
         try:
+            file_stream: IO[Any] = config.file  # type: ignore[assignment]
+
             # Sets the stream at the beginning
-            if hasattr(config.file, "seek"):
-                config.file.seek(0)
+            if hasattr(file_stream, "seek"):
+                file_stream.seek(0)
         
-            df_raw = temp_loader.read_raw(config.file)
+            df_raw = temp_loader.read_raw(file_stream)
             available_cols = list(df_raw.columns)
 
         except Exception as ex:
@@ -125,15 +127,20 @@ def uploaded_network_selector() -> Optional[SignedNetwork]:
 
     if proceed_with_loading:
         try:
-            if hasattr(config.file, "seek"):
-                config.file.seek(0)
+            file_stream: IO[Any] = config.file  # type: ignore[assignment]
+
+            # Sets the stream at the beginning
+            if hasattr(file_stream, "seek"):
+                file_stream.seek(0)
+
+            safe_mapping = cast(dict[str, Any], mapping_params)
 
             network = load_and_build_network(
-                file_buffer=config.file,
+                file_buffer=file_stream,
                 file_type=config.file_type,
                 representation_type=config.representation,
                 is_directed=config.directed,
-                **mapping_params
+                **safe_mapping
             )
             return network
         except Exception as ex:
