@@ -22,7 +22,7 @@ def main():
     )
 
     st.title("SignNet Analytica :blue[Beta]")
-    st.caption("Version 0.1.0-beta – Major UI restructuring and new features coming soon.")
+    st.caption("Version 0.2.0-beta – Major UI restructuring and new features coming soon.")
 
     # ==================================================================
     # SECTION 1: DATA CONFIGURATION & LOADING
