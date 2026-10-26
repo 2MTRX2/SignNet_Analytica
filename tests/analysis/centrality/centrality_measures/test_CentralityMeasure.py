@@ -1,6 +1,7 @@
 # test_CentralityMeasure.py
 import pytest
 from typing import Any
+import pandas as pd
 
 from signnet.analysis.centrality.centrality_measures.CentralityMeasure import CentralityMeasure, ParameterSpec
 from signnet.models.SignedNetwork import SignedNetwork
@@ -55,7 +56,7 @@ def test_cannot_instantiate_abstract_base_class():
     # ARRANGE, ACT & ASSERT
     # Check if python blocks the intantiation of an abstract base class
     with pytest.raises(TypeError, match="Can't instantiate abstract class CentralityMeasure"):
-        CentralityMeasure()
+        CentralityMeasure() # type: ignore[abstract-class-instantiation]
 
 def test_subclass_must_implement_abstract_methods():
     # ARRANGE
@@ -67,7 +68,7 @@ def test_subclass_must_implement_abstract_methods():
 
     # ACT & ASSERT
     with pytest.raises(TypeError, match="Can't instantiate abstract class IncompleteMeasure without an implementation for abstract method 'compute'"):
-        IncompleteMeasure()
+        IncompleteMeasure() # type: ignore[abstract-class-instantiation]
 
 def test_successful_subclass_instantiation():
     # ARRANGE
@@ -78,7 +79,7 @@ def test_successful_subclass_instantiation():
             return "Dummy"
         
         def compute(self, network: SignedNetwork):
-            return {"node_1": 1.0}
+            return pd.DataFrame({"score": [1.0]}, index=["node_1"])
 
     # ACT
     instance = DummyMeasure()

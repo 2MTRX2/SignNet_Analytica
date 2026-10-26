@@ -12,14 +12,14 @@ from signnet.io.data_representation.NetworkData import NetworkData
 
 def test_cannot_instantiate_abstract_base_class():
     with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-        RepresentationNormaliser() 
+        RepresentationNormaliser() # type: ignore[abstract-class-instantiation]
  
 def test_subclass_must_implement_abstract_methods():
     class IncompleteStrategy(RepresentationNormaliser):
         pass
  
     with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-        IncompleteStrategy()
+        IncompleteStrategy() # type: ignore[abstract-class-instantiation]
 
 def test_successful_subclass_instantiation():
     # ARRANGE

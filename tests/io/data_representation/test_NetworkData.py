@@ -41,8 +41,8 @@ def test_network_data_is_frozen_and_immutable():
     # ACT & ASSERT
     # try to override an attribute
     with pytest.raises(FrozenInstanceError, match="cannot assign to field"):
-        network_data.nodes = ["X", "Y"]
+        network_data.nodes = ["X", "Y"] # type: ignore[frozen-instance-modification]
 
     # try to expand with a new attribute
     with pytest.raises(FrozenInstanceError, match="cannot assign to field 'new_attribute'"):
-        network_data.new_attribute = "test"
+        network_data.new_attribute = "test" # type: ignore[frozen-instance-modification]

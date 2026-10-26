@@ -18,7 +18,7 @@ def test_calculate_spearman():
     series_y = pd.Series([2, 4, 6])
 
     expected_coeff, expected_p_val = spearmanr(series_x, series_y)
-    expected_coeff, expected_p_val = float(expected_coeff), float(expected_p_val)
+    expected_coeff, expected_p_val = float(expected_coeff), float(expected_p_val) # type: ignore[argument-type]
 
     # ACT
     results_coeff, results_p_val = spearman_corr.calculate(series_x, series_y)

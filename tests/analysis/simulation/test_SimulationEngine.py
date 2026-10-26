@@ -2,6 +2,7 @@
 import pytest
 import pandas as pd
 from unittest.mock import MagicMock, mock_open
+from typing import Any, cast
 
 from signnet.analysis.simulation.SimulationEngine import SimulationEngine
 from signnet.models.SignedNetwork import SignedNetwork
@@ -52,7 +53,7 @@ class TestSimulationEngine:
         engine = SimulationEngine(analysis_pipeline=mock_analysis_pipeline)
         
         # We build a tiny, real class stub that behaves exactly like your SignedNetwork object
-        class StubSignedNetwork:
+        class StubSignedNetwork(SignedNetwork):
             def __init__(self):
                 self.copy_count = 0
                 
@@ -80,7 +81,7 @@ class TestSimulationEngine:
 
         # Act & Assert: Running this must raise an AttributeError during normalization
         with pytest.raises(AttributeError):
-            engine.run(num_iterations=1, network_provider=invalid_network_object)
+            engine.run(num_iterations=1, network_provider=cast(Any, invalid_network_object))
 
     def test_fallback_index_label_when_index_name_is_none(self):
         # Arrange

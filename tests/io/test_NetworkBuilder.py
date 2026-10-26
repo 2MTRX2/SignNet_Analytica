@@ -1,6 +1,7 @@
 # test_NetworkBuilder.py
 import pytest
 from unittest.mock import MagicMock, patch
+from typing import cast, Any
 
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.io.data_representation.NetworkData import NetworkData
@@ -23,7 +24,10 @@ def mock_registries():
     mock_loader_cls.return_value = mock_loader_instance
 
     # return of the network object on instance level
-    fake_network_data = NetworkData(edges="fake_edges", nodes="fake_nodes")
+    fake_network_data = NetworkData(
+        edges=cast(Any, "fake_edges"), 
+        nodes=cast(Any, "fake_nodes")
+    )
     mock_loader_instance.load.return_value = fake_network_data
 
     # mock of the signed network class
@@ -52,9 +56,11 @@ def mock_registries():
 def test_load_and_build_network_edge_list_flow(mock_registries):
     # ARRANGE
     file_buffer = "dummy_buffer"
+
+    unwrapped_function: Any = load_and_build_network
     
     # ACT
-    result = load_and_build_network.__wrapped__(
+    result = unwrapped_function.__wrapped__(
         file_buffer=file_buffer,
         file_type="csv",
         representation_type="Edge List",
@@ -90,8 +96,10 @@ def test_load_and_build_network_matrix_flow(mock_registries):
     # ARRANGE
     file_buffer = "dummy_buffer"
 
+    unwrapped_function: Any = load_and_build_network
+
     # ACT
-    result = load_and_build_network.__wrapped__(
+    result = unwrapped_function.__wrapped__(
         file_buffer=file_buffer,
         file_type="CSV", 
         representation_type="Adjacency Matrix",
@@ -112,7 +120,8 @@ def test_load_and_build_network_matrix_flow(mock_registries):
 
 def test_load_and_build_network_unsupported_representation(mock_registries):
     with pytest.raises(ValueError, match="Unsupported network representation"):
-        load_and_build_network.__wrapped__(
+        unwrapped_function: Any = load_and_build_network
+        unwrapped_function.__wrapped__(
             file_buffer="buf",
             file_type="csv",
             representation_type="Invalid Type",
@@ -124,7 +133,8 @@ def test_load_and_build_network_unsupported_representation(mock_registries):
 
 def test_load_and_build_network_unsupported_file_type(mock_registries):
     with pytest.raises(ValueError, match="Unsupported file format configuration"):
-        load_and_build_network.__wrapped__(
+        unwrapped_function: Any = load_and_build_network
+        unwrapped_function.__wrapped__(
             file_buffer="buf",
             file_type="xml", 
             representation_type="Edge List",

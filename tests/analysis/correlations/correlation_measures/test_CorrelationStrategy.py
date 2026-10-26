@@ -13,7 +13,7 @@ def test_cannot_instantiate_abstract_base_class():
     # ARRANGE, ACT & ASSERT
     # Check if python blocks the intantiation of an abstract base class
     with pytest.raises(TypeError, match="Can't instantiate abstract class CorrelationStrategy"):
-        CorrelationStrategy()
+        CorrelationStrategy() # type: ignore[abstract-class-instantiation]
 
 def test_subclass_must_implement_abstract_methods():
     # ARRANGE
@@ -23,7 +23,7 @@ def test_subclass_must_implement_abstract_methods():
 
     # ACT & ASSERT
     with pytest.raises(TypeError, match="Can't instantiate abstract class IncompleteCorrelationStrategy without an implementation for abstract method 'calculate'"):
-        IncompleteCorrelationStrategy()
+        IncompleteCorrelationStrategy() # type: ignore[abstract-class-instantiation]
 
 
 def test_successful_subclass_instantiation():

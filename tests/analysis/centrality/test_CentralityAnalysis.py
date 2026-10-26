@@ -33,7 +33,7 @@ def test_compute_different_measures():
     centrality_measures[2].compute.return_value = kb_bloch_result_df
     mock_network = MagicMock(spec=SignedNetwork)
     
-    centrality_analysis = CentralityAnalysis(centrality_measures)
+    centrality_analysis = CentralityAnalysis(centrality_measures) # type: ignore[argument-type]
 
     expected_df = pd.concat([sd_result_df, pn_result_df, kb_bloch_result_df], axis=1)
 
