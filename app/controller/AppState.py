@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from typing import Optional
 import pandas as pd
+from nicegui import app, ui
 
 from signnet.models.SignedNetwork import SignedNetwork
 
@@ -42,12 +43,26 @@ class AppState:
     target_column_name: str = 'target'
     sign_column_name: str = 'sign'
 
+    available_columns: Optional[list] = None 
+
     # ==================================================================
     # CENTRALITY ANALYSIS
     # ==================================================================
     selected_measure_names: Optional[list] = None
     runtime_parameters: Optional[dict] = None
-    centrality_results: Optional[object] = None 
+
+    # Wir benennen das interne Feld um
+    _centrality_results: Optional[pd.DataFrame] = None
+
+    @property
+    def centrality_results(self) -> Optional[pd.DataFrame]:
+        return self._centrality_results
+
+    @centrality_results.setter
+    def centrality_results(self, value: Optional[pd.DataFrame]):
+        self._centrality_results = value
+        # HIER PASSIERT DIE MAGIE: Wir lösen ein offizielles NiceGUI-Event aus!
+        ui.notify('results_updated', type='ongoing')
 
     # ------------------------------------------------------------------
     # CORRELATION ANALYSIS
@@ -90,3 +105,20 @@ class AppState:
             self.sim_global_parameters = {"n": 100, "neg_ratio": 0.2, "n_iterations": 10}
         if self.sim_topology_kwargs is None:
             self.sim_topology_kwargs = {}
+
+def get_session_state() -> AppState:
+    """Retrieves or initializes the session-isolated AppState instance for the current browser tab.
+
+    Returns:
+        AppState: The unique, strongly typed state repository dedicated exclusively 
+            to the active user's web session thread.
+    """
+    try:
+        # Normaler Web-Betrieb: Isolierter Speicherplatz pro Tab
+        if 'state' not in app.storage.tab:
+            app.storage.tab['state'] = AppState()
+        return app.storage.tab['state']
+    except RuntimeError:
+        if not hasattr(app, '_transient_state'):
+            app._transient_state = AppState() # type: ignore
+        return app._transient_state # type: ignore

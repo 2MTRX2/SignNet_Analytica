@@ -1,73 +1,80 @@
 # app.py
-import streamlit as st
+from contextlib import contextmanager
+from nicegui import app, ui
 
-from app.ui.pages.centrality_page import show as show_centrality_page
-from app.ui.components.predefined_dataset_selector import predefined_dataset_selector
-from app.ui.components.uploaded_network_selector import uploaded_network_selector
-from app.ui.components.GraphBuilder import create_graphical_signed_network
+from app.ui import style
+from app.controller.AppState import get_session_state
+from app.ui.pages.upload_page import upload_page
+from app.ui.pages.centrality_page import centrality_page
 
 
-def main():
-    """Entry point of the Streamlit application."""
+@contextmanager
+def base_layout(title: str):
+    """Generates the unified, application-wide shell layout including headers and navigation drawers.
 
-    st.set_page_config(
-        page_title="SignNet Analytica (Beta)",
-        page_icon="🌐",
-        layout="wide",
-        menu_items={
-            'Get Help': 'https://github.com/2MTRX2/SignNet_Analytica',
-            'Report a bug': 'https://github.com/2MTRX2/SignNet_Analytica/issues',
-            'About': "### SignNet Analytica v0.2.0-beta\nThis is a framework for Signed Network Analysis. Major UI updates and features like stability and efficiency parameters are coming soon!"
-        }
-    )
+    Leverages python context management via yielding to securely inject multi-page view content 
+    into a structured, responsive maximum-width layout grid. Enforces design system constraints
+    by pulling core aesthetics directly from the centralized style repository.
 
-    st.title("SignNet Analytica :blue[Beta]")
-    st.caption("Version 0.2.0-beta – Major UI restructuring and new features coming soon.")
-
-    # ==================================================================
-    # SECTION 1: DATA CONFIGURATION & LOADING
-    # ==================================================================
-    st.header("1. Data Input")
+    Args:
+        title (str): Semantic descriptor of the active sub-view for logging and title mutations.
+    """
+    app_state = get_session_state()
     
-    # Selection of the input method
-    input_method = st.radio(
-        "Select Data Source",
-        ["Upload File", "Predefined Dataset"],
-        horizontal=True
-    )
+    # 1. HEADER (Zentralisiertes Slate-Farbschema)
+    with ui.header().classes('bg-slate-800 text-white items-center justify-between px-6 py-3 shadow-md'):
+        with ui.row().classes('items-center gap-3'):
+            ui.icon('lan', size='md').classes('text-blue-400')
+            ui.label('SignNet Analytica').classes('text-xl font-bold tracking-wide')
+            ui.badge('v1.0.0', color='blue').classes('text-xs px-2')
+        
+        # Systemweiter Lade-Indikator, reaktiv gekoppelt an den asynchronen Verarbeitungsstatus
+        ui.spinner(size='md', color='white').bind_visibility_from(app_state, 'is_loading')
 
-    # Ensure that the application starts with an empty network
-    network = None
+    # 2. PERSISTENTE SEITENLEISTE (Dunkles Navigation-Drawer Design)
+    with ui.left_drawer(fixed=True, value=True).classes('bg-slate-900 text-slate-300 p-4 border-r border-slate-800 w-[260px]'):
+        ui.label('NAVIGATION').classes(style.SUBSECTION_HEADING + ' px-3')
+        
+        # Reaktive Link-Strukturen mit einheitlichen Hover-Aesthetics
+        with ui.column().classes('w-full gap-1'):
+            ui.link('🌐 Data Input / Upload', '/').classes(
+                'w-full px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors text-sm font-medium'
+            )
+            ui.link('📊 Centrality Analysis', '/centrality').classes(
+                'w-full px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors text-sm font-medium'
+            )
+            
+        ui.separator().classes('border-slate-800 my-6')
+        
+        # Meta-Informationsblock (Entspricht dem alten Streamlit-About-Menü)
+        with ui.column().classes('px-3 text-xs text-slate-500 gap-2'):
+            ui.label('Chair of Microeconomics').classes('font-semibold text-slate-400')
+            ui.label('University of Fribourg')
+            with ui.row().classes('gap-2 mt-2'):
+                ui.link('GitHub', 'https://github.com/2MTRX2/SignNet_Analytica').classes('text-blue-500 hover:underline')
+                ui.link('Bugs', 'https://github.com/2MTRX2/SignNet_Analytica/issues').classes('text-blue-500 hover:underline')
 
-    # Proceed with the input method of a predefined dataset
-    if input_method == "Predefined Dataset":
-        # Ensures the rendering, the selection, and the loading of a predefined dataset
-        network = predefined_dataset_selector()
-
-    # Proceed with the input method of an uploaded file
-    elif input_method == "Upload File":
-        # Ensures the rendering and the loading of an uploaded dataset
-        network = uploaded_network_selector()
-
-    # Ensure that no not-implemented method can be chosen
-    else:
-        st.error(f"Developer Error: Input method '{input_method}' is not implemented yet.")
-
-    # ==================================================================
-    # SECTION 2: CENTRALITY ANALYSIS
-    # ==================================================================
-    st.divider()
-    st.header("2. Centrality Analysis")
-
-    # As soon as a network connection is established, the analysis begins
-    if network is not None:
-        # Creates a graphical representation of the network and integrates it into the application
-        create_graphical_signed_network(network)
-        # Performs a static analysis of the network: centrality, correlations, p-value
-        show_centrality_page(network)
-    else:
-        st.info("Waiting for a valid network to be loaded in Section 1...")
+    # 3. ZENTRALER INHALTSBEREICH (Nutzt das standardisierte Max-Width-Layout des Style Guides)
+    with ui.column().classes('w-full max-w-7xl mx-auto p-8 gap-4'):
+        # Das yield erlaubt es den einzelnen Routen, ihren Content direkt in diesen Column-Block zu injizieren
+        yield
 
 
-if __name__ == "__main__":
-    main()
+# ==================================================================
+# DEFINITION DER MULTI-PAGE ROUTEN (Nutzen die Context-Manager-Syntax)
+# ==================================================================
+
+@ui.page('/')
+def index_route():
+    """Route für den Datenimport (Ehemals Sektion 1)."""
+    with base_layout("Data Input"):
+        upload_page()  # Inhalt wird sauber innerhalb des Max-Width-Rasters gerendert
+
+
+@ui.page('/centrality')
+def centrality_route():
+    """Route für die Analyse-Pipelines (Ehemals Sektion 2)."""
+    with base_layout("Centrality Analysis"):
+        centrality_page()  # Inhalt wird sauber innerhalb des Max-Width-Rasters gerendert
+
+

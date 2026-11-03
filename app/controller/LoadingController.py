@@ -1,15 +1,15 @@
 # LoadingController.py
-from signnet.services.LoadingService import NetworkService
+from signnet.services.LoadingService import LoadingService
 from app.controller.AppState import AppState
 
 from signnet.io.DatasetRegistry import DatasetRegistry
 
-class UploadController:
+class LoadingController:
     """
     Manages session-state boundaries and coordinates lifecycle actions for network data ingestion.
     """
     def __init__(self):
-        self.network_service = NetworkService()
+        self.network_service = LoadingService()
 
     def process_upload(self, file_buffer, app_state: AppState) -> None:
         """Validates input streams, executes the network parser service, and updates session outputs.

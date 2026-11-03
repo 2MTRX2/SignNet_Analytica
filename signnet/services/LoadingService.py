@@ -5,7 +5,7 @@ from io import BytesIO, StringIO
 from signnet.models.SignedNetwork import SignedNetwork
 from signnet.io.LoadingRegistry import REPRESENTATION_REGISTRY, STRATEGY_REGISTRY
 
-class NetworkService: 
+class LoadingService: 
     """
     Executes raw file parsing pipelines and handles structural domain-network construction.
     """
