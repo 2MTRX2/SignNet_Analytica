@@ -1,10 +1,10 @@
 # app.py
 import streamlit as st
 
-from signnet.ui.pages.centrality_page import show as show_centrality_page
-from signnet.ui.components.predefined_dataset_selector import predefined_dataset_selector
-from signnet.ui.components.uploaded_network_selector import uploaded_network_selector
-from signnet.ui.components.GraphBuilder import create_graphical_signed_network
+from app.ui.pages.centrality_page import show as show_centrality_page
+from app.ui.components.predefined_dataset_selector import predefined_dataset_selector
+from app.ui.components.uploaded_network_selector import uploaded_network_selector
+from app.ui.components.GraphBuilder import create_graphical_signed_network
 
 
 def main():

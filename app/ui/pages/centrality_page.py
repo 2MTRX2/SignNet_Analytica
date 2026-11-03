@@ -1,13 +1,13 @@
 # centrality_page.py
 import streamlit as st
 
-from signnet.ui.components.centrality_selector import centrality_selector
-from signnet.ui.components.network_summary import network_summary
-from signnet.ui.components.centrality_measure_parameter_config import configure_centrality_measure_parameters
-from signnet.ui.components.correlation_component import render_correlation_analysis
-from signnet.ui.components.simulation_component import render_benchmarking_centrality_analysis
-from signnet.ui.components.grayout_stale_df import grayout_df
-from signnet.ui.components.grayout_stale_df import is_stale
+from app.ui.components.centrality_selector import centrality_selector
+from app.ui.components.network_summary import network_summary
+from app.ui.components.centrality_measure_parameter_config import configure_centrality_measure_parameters
+from app.ui.components.correlation_component import render_correlation_analysis
+from app.ui.components.simulation_component import render_benchmarking_centrality_analysis
+from app.ui.components.grayout_stale_df import grayout_df
+from app.ui.components.grayout_stale_df import is_stale
 
 from signnet.analysis.centrality.CentralityAnalysis import CentralityAnalysis
 from signnet.analysis.centrality.CentralityRegistry import CentralityRegistry

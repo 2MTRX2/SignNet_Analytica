@@ -1,2 +1,2 @@
-from signnet.app import main
+from app.app import main
 main()

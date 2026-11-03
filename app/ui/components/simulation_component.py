@@ -3,10 +3,10 @@ import streamlit as st
 import pandas as pd
 from typing import Dict, Any, List
 
-from signnet.ui.components.simulation_parameter_config import configure_topology_parameters
-from signnet.ui.components.simulation_topology_selector import simulation_topology_selector
-from signnet.ui.components.grayout_stale_df import grayout_df
-from signnet.ui.components.grayout_stale_df import is_stale
+from app.ui.components.simulation_parameter_config import configure_topology_parameters
+from app.ui.components.simulation_topology_selector import simulation_topology_selector
+from app.ui.components.grayout_stale_df import grayout_df
+from app.ui.components.grayout_stale_df import is_stale
 
 
 from signnet.analysis.simulation.SimulationEngine import SimulationEngine

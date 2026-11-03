@@ -3,7 +3,7 @@ from typing import Optional, cast, Any
 import streamlit as st
 
 from signnet.models.SignedNetwork import SignedNetwork
-from signnet.ui.components.file_upload import file_upload
+from app.ui.components.file_upload import file_upload
 from signnet.io.NetworkBuilder import load_and_build_network
 from signnet.io.LoadingRegistry import REPRESENTATION_REGISTRY
 from signnet.io.LoadingRegistry  import STRATEGY_REGISTRY
