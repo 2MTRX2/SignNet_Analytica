@@ -26,6 +26,7 @@ class AppState:
     # NETWORK
     # ------------------------------------------------------------------
     current_network: Optional[SignedNetwork] = None
+    network_visualization_html: Optional[str] = None
 
     # ==================================================================
     # FILE LOADING
