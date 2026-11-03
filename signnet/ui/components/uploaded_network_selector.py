@@ -1,5 +1,5 @@
 # uploaded_network_selector.py
-from typing import Optional, cast, Any
+from typing import Optional, cast, Any, IO
 import streamlit as st
 
 from signnet.models.SignedNetwork import SignedNetwork
