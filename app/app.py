@@ -63,18 +63,16 @@ def base_layout(title: str):
 # ==================================================================
 # DEFINITION DER MULTI-PAGE ROUTEN (Nutzen die Context-Manager-Syntax)
 # ==================================================================
-
 @ui.page('/')
-def index_route():
-    """Route für den Datenimport (Ehemals Sektion 1)."""
+async def index_route():
+    await ui.context.client.connected()
     with base_layout("Data Input"):
-        upload_page()  # Inhalt wird sauber innerhalb des Max-Width-Rasters gerendert
-
+        upload_page()
 
 @ui.page('/centrality')
-def centrality_route():
-    """Route für die Analyse-Pipelines (Ehemals Sektion 2)."""
+async def centrality_route():
+    await ui.context.client.connected()
     with base_layout("Centrality Analysis"):
-        centrality_page()  # Inhalt wird sauber innerhalb des Max-Width-Rasters gerendert
+        centrality_page()
 
 

@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from typing import Optional
 import pandas as pd
-from nicegui import app, ui
+from nicegui import app
 
 from signnet.models.SignedNetwork import SignedNetwork
 
@@ -52,17 +52,7 @@ class AppState:
     runtime_parameters: Optional[dict] = None
 
     # Wir benennen das interne Feld um
-    _centrality_results: Optional[pd.DataFrame] = None
-
-    @property
-    def centrality_results(self) -> Optional[pd.DataFrame]:
-        return self._centrality_results
-
-    @centrality_results.setter
-    def centrality_results(self, value: Optional[pd.DataFrame]):
-        self._centrality_results = value
-        # HIER PASSIERT DIE MAGIE: Wir lösen ein offizielles NiceGUI-Event aus!
-        ui.notify('results_updated', type='ongoing')
+    centrality_results: Optional[pd.DataFrame] = None
 
     # ------------------------------------------------------------------
     # CORRELATION ANALYSIS
@@ -113,12 +103,6 @@ def get_session_state() -> AppState:
         AppState: The unique, strongly typed state repository dedicated exclusively 
             to the active user's web session thread.
     """
-    try:
-        # Normaler Web-Betrieb: Isolierter Speicherplatz pro Tab
-        if 'state' not in app.storage.tab:
-            app.storage.tab['state'] = AppState()
-        return app.storage.tab['state']
-    except RuntimeError:
-        if not hasattr(app, '_transient_state'):
-            app._transient_state = AppState() # type: ignore
-        return app._transient_state # type: ignore
+    if 'state' not in app.storage.tab:
+        app.storage.tab['state'] = AppState()
+    return app.storage.tab['state']

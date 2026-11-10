@@ -2,7 +2,7 @@
 import pandas as pd
 from nicegui import app, ui
 from app.ui import style  # Zentralisiertes Design-System importieren
-from app.controller.AppState import AppState
+from app.controller.AppState import AppState, get_session_state
 from app.controller.SimulationController import SimulationController
 from signnet.analysis.simulation.TopologyRegistry import TopologyRegistry
 
@@ -10,28 +10,26 @@ sim_ctrl = SimulationController()
 
 def handle_run_simulation():
     """UI-Handler: Triggert das zeitintensive Simulations-Backend."""
-    if 'state' not in app.storage.tab:
-        return
-    state: AppState = app.storage.tab['state']
+    app_state = get_session_state()
     
     try:
         ui.notify("Simulationspipeline gestartet...", type='info')
-        sim_ctrl.execute_simulation_pipeline(state)
+        sim_ctrl.execute_simulation_pipeline(app_state)
         ui.notify("Simulation erfolgreich abgeschlossen!", type='positive')
         simulation_results_ui.refresh()
     except Exception as e:
         ui.notify(f"Simulationsfehler: {str(e)}", type='negative', close_button=True, timeout=8000)
 
 
-def generate_download_bytes(df: pd.DataFrame, state: AppState) -> bytes:
+def generate_download_bytes(df: pd.DataFrame, app_state: AppState) -> bytes:
     """Generiert die CSV-Datei inklusive der wissenschaftlichen Metadaten als Header."""
     meta_parts = [
-        f"Topo: {state.selected_topology}",
-        f"N: {state.sim_global_parameters.get('n')}", # type: ignore
-        f"Iter: {state.sim_global_parameters.get('n_iterations')}", # type: ignore
-        f"Neg_Ratio: {state.sim_global_parameters.get('neg_ratio')}" # type: ignore
+        f"Topo: {app_state.selected_topology}",
+        f"N: {app_state.sim_global_parameters.get('n')}", # type: ignore
+        f"Iter: {app_state.sim_global_parameters.get('n_iterations')}", # type: ignore
+        f"Neg_Ratio: {app_state.sim_global_parameters.get('neg_ratio')}" # type: ignore
     ]
-    for param_name, param_value in state.sim_topology_kwargs.items(): # type: ignore
+    for param_name, param_value in app_state.sim_topology_kwargs.items(): # type: ignore
         meta_parts.append(f"{param_name}: {param_value}")
             
     meta_string = " | ".join(meta_parts)
