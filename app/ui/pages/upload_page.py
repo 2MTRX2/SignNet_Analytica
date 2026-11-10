@@ -1,6 +1,6 @@
 # app/ui/pages/upload_page.py
 from nicegui import app, ui
-from app.ui import style  # Zentralisiertes Design-System importieren
+from app.ui import AppStyle  # Zentralisiertes Design-System importieren
 from app.controller.AppState import AppState, get_session_state
 from app.controller.LoadingController import LoadingController
 from app.controller.GraphBuilderController import GraphBuilderController
@@ -110,8 +110,8 @@ def input_fields_container(state: AppState):
 
     with ui.column().classes('w-full gap-3'):
         with ui.row().classes('w-full gap-4'):
-            ui.select(options=['csv', 'excel', 'json'], label='Dateiformat').bind_value(state, 'selected_file_type').classes(style.INPUT_HALF_WIDTH)
-            ui.select(options=['Edge List', 'Adjacency Matrix'], label='Repräsentation').bind_value(state, 'selected_repr_type').classes(style.INPUT_HALF_WIDTH)
+            ui.select(options=['csv', 'excel', 'json'], label='Dateiformat').bind_value(state, 'selected_file_type').classes(AppStyle.INPUT_HALF_WIDTH)
+            ui.select(options=['Edge List', 'Adjacency Matrix'], label='Repräsentation').bind_value(state, 'selected_repr_type').classes(AppStyle.INPUT_HALF_WIDTH)
 
         ui.checkbox('Gerichtetes Netzwerk (Directed)').bind_value(state, 'is_directed').classes('my-1')
 
@@ -127,7 +127,7 @@ def input_fields_container(state: AppState):
                     ui.select(options=available_cols, label='Sign/Value Column').bind_value(state, 'sign_column_name').classes('flex-1')
                 
                 # Der "Verarbeiten"-Button wird eingeblendet, sobald die Spalten da sind
-                ui.button("Netzwerk-Architektur berechnen", on_click=lambda: process_final_network()).classes(style.BTN_SUCCESS + ' mt-2')
+                ui.button("Netzwerk-Architektur berechnen", on_click=lambda: process_final_network()).classes(AppStyle.BTN_SUCCESS + ' mt-2')
             else:
                 # Textfelder als Fallback/Platzhalter, bevor eine Datei gewählt wurde
                 ui.markdown("##### Spaltennamen (Vorauswahl)").classes('text-xs font-bold text-slate-400')
@@ -141,12 +141,12 @@ def input_fields_container(state: AppState):
 def visualization_container(state: AppState):
     """Rendert die Pyvis-Grafik-Vorschau."""
     if state.current_network is None:
-        with ui.card().classes(style.CARD_PLACEHOLDER):
+        with ui.card().classes(AppStyle.CARD_PLACEHOLDER):
             ui.icon('cloud_upload', size='xl').classes('text-slate-300')
             ui.label("Warte auf gültiges Netzwerk...").classes('text-slate-400 font-medium mt-2')
         return
 
-    ui.markdown("### 🌐 Interaktive Netzwerk-Vorschau").classes(style.SECTION_HEADING + ' mt-4')
+    ui.markdown("### 🌐 Interaktive Netzwerk-Vorschau").classes(AppStyle.SECTION_HEADING + ' mt-4')
     with ui.card().classes('w-full p-2 shadow-sm border border-slate-200 overflow-hidden'):
         if state.network_visualization_html:
             ui.html(state.network_visualization_html).classes('w-full h-[520px]')
@@ -159,12 +159,12 @@ def upload_page():
     """Haupt-Layout der Upload-Seite."""
     state = get_session_state()
 
-    ui.label("1. Data Input & Configuration").classes(style.PAGE_TITLE)
-    ui.label("Lade deine Netzwerkdaten hoch oder nutze Beispieldatensätze.").classes(style.PAGE_SUBTITLE)
+    ui.label("1. Data Input & Configuration").classes(AppStyle.PAGE_TITLE)
+    ui.label("Lade deine Netzwerkdaten hoch oder nutze Beispieldatensätze.").classes(AppStyle.PAGE_SUBTITLE)
 
     with ui.row().classes('w-full gap-6 items-start'):
         with ui.column().classes('w-full md:w-5/12 gap-4'):
-            with ui.card().classes(style.CARD_STANDARD):
+            with ui.card().classes(AppStyle.CARD_STANDARD):
                 ui.markdown("#### 📂 Datenquelle auswählen").classes('text-slate-700 font-semibold mb-2')
                 
                 with ui.tabs().classes('w-full border-b border-slate-200') as tabs:
@@ -185,7 +185,7 @@ def upload_page():
                     with ui.tab_panel(predefined_tab).classes('p-0 gap-4'):
                         ui.markdown("##### Muster-Netzwerk wählen").classes('text-xs font-bold text-slate-500')
                         available_datasets = DatasetRegistry.get_available_names()
-                        ui.select(options=[''] + available_datasets, label='Verfügbare Test-Netzwerke', on_change=handle_predefined_selection).classes(style.INPUT_MAX_WIDTH)
+                        ui.select(options=[''] + available_datasets, label='Verfügbare Test-Netzwerke', on_change=handle_predefined_selection).classes(AppStyle.INPUT_MAX_WIDTH)
 
         with ui.column().classes('flex-1 min-w-[350px]'):
             visualization_container(state)

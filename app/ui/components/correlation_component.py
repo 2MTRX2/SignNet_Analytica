@@ -3,7 +3,7 @@ import pandas as pd
 from typing import cast
 from nicegui import app, ui
 
-from app.ui import style  
+from app.ui import AppStyle  
 from app.controller.AppState import AppState, get_session_state
 from app.controller.CorrelationController import CorrelationController
 from signnet.analysis.correlations.CorrelationRegistry import CorrelationRegistry
@@ -68,7 +68,7 @@ def render_correlation_analysis_ui(app_state: AppState) -> None:
     """Orchestrates and renders the interactive correlation analysis interface."""
     # KORREKTUR: Validierung gegen shape-Attribut abgesichert (verhindert IndexError bei unberechneten Datensätzen)
     if app_state.centrality_results is None or app_state.centrality_results.shape[1] < 2: # type: ignore
-        ui.markdown("Please select and compute at least **two** centrality measures to perform a correlation analysis.").classes(style.CARD_WARNING + ' text-amber-700 text-sm')
+        ui.markdown("Please select and compute at least **two** centrality measures to perform a correlation analysis.").classes(AppStyle.CARD_WARNING + ' text-amber-700 text-sm')
         return
 
     # KORREKTUR: Abgesicherter Zugriff auf Registry-Listen falls diese leer sein sollten
@@ -91,7 +91,7 @@ def render_correlation_analysis_ui(app_state: AppState) -> None:
             options=available_metrics,
             label='Select Correlation Metric',
             on_change=handle_correlation_change
-        ).bind_value(app_state, 'selected_correlation_metric').classes(style.INPUT_HALF_WIDTH)
+        ).bind_value(app_state, 'selected_correlation_metric').classes(AppStyle.INPUT_HALF_WIDTH)
 
         ui.select(
             options={0.05: 'α = 0.05 (95.0% Confidence)', 
@@ -100,7 +100,7 @@ def render_correlation_analysis_ui(app_state: AppState) -> None:
                      0.10: 'α = 0.10 (90.0% Confidence)'},
             label='Select Significance Level (Alpha)',
             on_change=handle_correlation_change
-        ).bind_value(app_state, 'selected_alpha').classes(style.INPUT_HALF_WIDTH)
+        ).bind_value(app_state, 'selected_alpha').classes(AppStyle.INPUT_HALF_WIDTH)
 
     # Die reaktive Tab-Ergebnis-Sektion einbetten
     correlation_tabs_ui(app_state)

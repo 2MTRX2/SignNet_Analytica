@@ -1,7 +1,7 @@
 # app/ui/components/simulation_component.py
 import pandas as pd
 from nicegui import app, ui
-from app.ui import style  # Zentralisiertes Design-System importieren
+from app.ui import AppStyle  # Zentralisiertes Design-System importieren
 from app.controller.AppState import AppState, get_session_state
 from app.controller.SimulationController import SimulationController
 from signnet.analysis.simulation.TopologyRegistry import TopologyRegistry
@@ -69,12 +69,12 @@ def simulation_results_ui(state: AppState):
             ui.button(
                 "Download Extreme Values (CSV)", 
                 on_click=lambda: ui.download(src=ext_bytes, filename=f"sim_extremes_{topo_sanitized}.csv")
-            ).classes(style.BTN_SECONDARY + ' mt-2 text-xs')
+            ).classes(AppStyle.BTN_SECONDARY + ' mt-2 text-xs')
 
 
             # Empirische Baseline (Echtes Eingangsnetzwerk)
             if state.sim_empirical_summary is not None:
-                ui.markdown("### Empirical Network Metrics Summary").classes(style.SECTION_HEADING + ' mt-6 mb-1')
+                ui.markdown("### Empirical Network Metrics Summary").classes(AppStyle.SECTION_HEADING + ' mt-6 mb-1')
                 ui.markdown("Aggregated baseline values (maximum, minimum, and mean) computed directly on your real input network.").classes('text-xs text-slate-500 mb-2')
                 df_emp_clean = state.sim_empirical_summary.reset_index()
                 ui.aggrid.from_pandas(df_emp_clean).classes('w-full h-52')
@@ -98,7 +98,7 @@ def simulation_results_ui(state: AppState):
             ui.button(
                 "Download Gini Coefficients (CSV)", 
                 on_click=lambda: ui.download(src=gini_bytes, filename=f"sim_gini_{topo_sanitized}.csv")
-            ).classes(style.BTN_SECONDARY + ' mt-2 text-xs mb-4')
+            ).classes(AppStyle.BTN_SECONDARY + ' mt-2 text-xs mb-4')
 
 
             # --- ECHARTS BALKENDIAGRAMM (SIMULATION) ---
@@ -114,7 +114,7 @@ def simulation_results_ui(state: AppState):
 
             # Empirische Baseline Gini (Echtes Eingangsnetzwerk)
             if state.sim_empirical_gini is not None:
-                ui.markdown("### Empirical Network Metrics Summary").classes(style.SECTION_HEADING + ' mt-8 mb-1')
+                ui.markdown("### Empirical Network Metrics Summary").classes(AppStyle.SECTION_HEADING + ' mt-8 mb-1')
                 ui.markdown("Aggregated Gini-Coefficients computed directly on your real input network.").classes('text-xs text-slate-500 mb-2')
                 
                 df_emp_gini_clean = state.sim_empirical_gini.reset_index()
@@ -139,14 +139,14 @@ def render_simulation_benchmarking_ui(state: AppState) -> None:
     if not state.selected_topology and available_topologies:
         state.selected_topology = available_topologies # type: ignore
 
-    with ui.card().classes(style.CARD_STANDARD + ' mt-4'):
+    with ui.card().classes(AppStyle.CARD_STANDARD + ' mt-4'):
         ui.markdown("#### Configure Simulation Constraints").classes('text-slate-700 font-semibold mb-2')
         
         with ui.row().classes('items-center gap-4 my-2'):
             ui.button(
                 "Run Simulation Pipeline", 
                 on_click=handle_run_simulation
-            ).bind_enabled_from(state, 'is_loading', backward=lambda x: not x).classes(style.BTN_PRIMARY)
+            ).bind_enabled_from(state, 'is_loading', backward=lambda x: not x).classes(AppStyle.BTN_PRIMARY)
             
             ui.spinner(size='lg').bind_visibility_from(state, 'is_loading')
 

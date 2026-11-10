@@ -2,7 +2,7 @@
 from nicegui import app, ui
 
 from signnet.analysis.centrality.CentralityRegistry import CentralityRegistry
-from app.ui import style  # Zentralisiertes Design-System importieren
+from app.ui import AppStyle  # Zentralisiertes Design-System importieren
 from app.controller.AppState import AppState, get_session_state
 from app.controller.CentralityController import CentralityController
 from app.ui.components.network_summary import render_network_summary
@@ -38,9 +38,9 @@ def dynamic_parameters_form_ui(app_state: AppState):
     )
 
     if has_parameters:
-        ui.markdown("#### Metrik-Parameter konfigurieren").classes(style.SUBSECTION_HEADING + ' mt-4')
+        ui.markdown("#### Metrik-Parameter konfigurieren").classes(AppStyle.SUBSECTION_HEADING + ' mt-4')
         
-        with ui.card().classes(style.CARD_MUTED):
+        with ui.card().classes(AppStyle.CARD_MUTED):
             for name in app_state.selected_measure_names:
                 measure_class = CentralityRegistry.get_measure_class(name)
                 params = measure_class.PARAMETERS  # Erwartet ein Dict oder eine Liste aus der Registry
@@ -58,12 +58,12 @@ def dynamic_parameters_form_ui(app_state: AppState):
                                 label=p_config.get("label", p_name),
                                 format='%.4f',
                                 step=0.01
-                            ).bind_value(app_state.runtime_parameters[name], p_name).classes(style.INPUT_HALF_WIDTH + ' mb-2') # type: ignore
+                            ).bind_value(app_state.runtime_parameters[name], p_name).classes(AppStyle.INPUT_HALF_WIDTH + ' mb-2') # type: ignore
                         elif p_config.get("type") == "int":
                             ui.number(
                                 label=p_config.get("label", p_name),
                                 step=1
-                            ).bind_value(app_state.runtime_parameters[name], p_name).classes(style.INPUT_HALF_WIDTH + ' mb-2') # type: ignore
+                            ).bind_value(app_state.runtime_parameters[name], p_name).classes(AppStyle.INPUT_HALF_WIDTH + ' mb-2') # type: ignore
 
 
 @ui.refreshable
@@ -72,10 +72,10 @@ def results_section_ui(app_state: AppState):
     if app_state.centrality_results is None:
         return
 
-    ui.markdown("### Analyse-Ergebnisse").classes(style.SECTION_HEADING + ' mt-6')
+    ui.markdown("### Analyse-Ergebnisse").classes(AppStyle.SECTION_HEADING + ' mt-6')
     
     # 1. ERGEBNISTABELLE (AgGrid)
-    with ui.card().classes(style.CARD_STANDARD + ' mb-6'):
+    with ui.card().classes(AppStyle.CARD_STANDARD + ' mb-6'):
         df_clean = app_state.centrality_results.reset_index() # type: ignore
         ui.aggrid.from_pandas(df_clean).classes('w-full h-80')
 
@@ -110,7 +110,7 @@ def centrality_page():
 
     # Sicherheitsnetz: Wenn im Upload-Bereich kein Netzwerk geladen wurde
     if app_state.current_network is None:
-        with ui.card().classes(style.CARD_WARNING):
+        with ui.card().classes(AppStyle.CARD_WARNING):
             ui.icon('warning', size='lg').classes('text-amber-500')
             ui.label("Kein Netzwerk aktiv").classes('text-xl font-bold text-amber-800 my-2')
             ui.label("Bitte lade zuerst im Upload-Bereich eine Netzwerkdatei oder ein vordefiniertes Dataset hoch.").classes('text-slate-600 text-sm')
@@ -122,13 +122,13 @@ def centrality_page():
     ui.hr().classes('my-4') # type: ignore
 
     # --- HAUPTLAYOUT ---
-    ui.label("Zentralitäts-Analyse").classes(style.PAGE_TITLE)
-    ui.label("Berechne strukturelle Metriken für dein geladenes Signed Network.").classes(style.PAGE_SUBTITLE)
+    ui.label("Zentralitäts-Analyse").classes(AppStyle.PAGE_TITLE)
+    ui.label("Berechne strukturelle Metriken für dein geladenes Signed Network.").classes(AppStyle.PAGE_SUBTITLE)
 
     # 1. METRIK-AUSWAHL (Multi-Select)
     measure_options = CentralityRegistry.get_available_names()
     
-    with ui.card().classes(style.CARD_STANDARD + ' mb-4'):
+    with ui.card().classes(AppStyle.CARD_STANDARD + ' mb-4'):
         ui.markdown("#### 1. Zentralitätsmaße auswählen").classes('text-slate-700 font-semibold mb-2')
         ui.select(
             options=measure_options,
@@ -136,7 +136,7 @@ def centrality_page():
             value=app_state.selected_measure_names,
             on_change=on_measure_selection_changed,
             label="Zentralitätsmetriken"
-        ).classes(style.INPUT_MAX_WIDTH)
+        ).classes(AppStyle.INPUT_MAX_WIDTH)
 
         # Dynamisches Parameter-Formular platzieren (reaktiv eingebettet)
         dynamic_parameters_form_ui(app_state)
@@ -146,7 +146,7 @@ def centrality_page():
         ui.button(
             "Analyse ausführen", 
             on_click=handle_run_analysis
-        ).bind_enabled_from(app_state, 'is_loading', backward=lambda x: not x).classes(style.BTN_PRIMARY)
+        ).bind_enabled_from(app_state, 'is_loading', backward=lambda x: not x).classes(AppStyle.BTN_PRIMARY)
         
         # Der Spinner taucht automatisch auf, wenn berechnet wird
         ui.spinner(size='lg').bind_visibility_from(app_state, 'is_loading')
