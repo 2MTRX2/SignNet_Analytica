@@ -148,8 +148,8 @@ def visualization_container(state: AppState):
 
     ui.markdown("### 🌐 Interaktive Netzwerk-Vorschau").classes(AppStyle.SECTION_HEADING + ' mt-4')
     with ui.card().classes('w-full p-2 shadow-sm border border-slate-200 overflow-hidden'):
-        if state.network_visualization_html:
-            ui.html(state.network_visualization_html).classes('w-full h-[520px]')
+        if state.loaded_network_visualization_html:
+            ui.html(state.loaded_network_visualization_html).classes('w-full h-[520px]')
         else:
             with ui.row().classes('w-full justify-center items-center h-64'):
                 ui.spinner(size='md')

@@ -1,6 +1,7 @@
 # GraphBuilderController.py
+from typing import Optional
+from app.controller.AppState import AppState, NetworkBundle
 from signnet.services.GraphBuilderService import GraphBuilderService
-from app.controller.AppState import AppState
 
 class GraphBuilderController:
     """
@@ -9,28 +10,30 @@ class GraphBuilderController:
     def __init__(self):
         self.graph_builder_service = GraphBuilderService()
 
-    def generate_visualization(self, app_state: AppState) -> None:
-        """Validates pre-conditions, executes the graph visualizer service, and updates session outputs.
+    def generate_visualization(self, bundle: Optional[NetworkBundle], app_state: AppState) -> None:
+        """Validates pre-conditions, executes the graph visualizer service, and updates the target bundle.
 
         Args:
-            app_state (AppState): The session-isolated state model of the active user session containing 
-                the target network domain configuration.
+            bundle (Optional[NetworkBundle]): The target network bundle (e.g., app_state.loaded or app_state.selected)
+                containing the network to visualize and where the HTML output will be stored.
+            app_state (AppState): The session-isolated state model for managing global loading flags.
 
         Raises:
-            ValueError: If workflow pre-conditions (missing network data) are not satisfied.
+            ValueError: If no valid network bundle is provided.
         """
         # Validation
-        if not app_state.current_network:
-            raise ValueError("No network loaded.")
+        if not bundle or not bundle.network:
+            raise ValueError("No network available to visualize.")
 
         app_state.is_loading = True
         
         try:
             # Generate HTML graph
-            html_string = self.graph_builder_service.build_network_html(app_state.current_network)
+            html_string = self.graph_builder_service.build_network_html(bundle.network)
             
-            # Update state
-            app_state.network_visualization_html = html_string
+            # Speichert das Ergebnis direkt im übergebenen Bundle (loaded ODER selected)
+            bundle.visualization_html = html_string
             
         finally:
             app_state.is_loading = False
+

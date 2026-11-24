@@ -3,6 +3,8 @@ from pyvis.network import Network
 from signnet.adapters.NetworkXAdapter import NetworkXAdapter
 from signnet.models.SignedNetwork import SignedNetwork
 
+from app.ui.AppStyle import AppStyle
+
 class GraphBuilderService:
     """
     Executes graph-to-visual transformations and handles interactive HTML network generation.
@@ -33,7 +35,7 @@ class GraphBuilderService:
             sign = int(data.get('sign', 1))
             
             # Green: Positive; Red: Negative
-            edge_color = "#2ca02c" if sign > 0 else "#d62728"  
+            edge_color = f"{AppStyle.EDGE_POSITIVE_HEX}" if sign > 0 else f"{AppStyle.EDGE_NEGATIVE_HEX}" 
             # Dashed: Negative
             edge_style = True if sign < 0 else False          
 
@@ -43,7 +45,7 @@ class GraphBuilderService:
             data['weight'] = abs(sign)
 
         # Pyvis network Instantiation
-        net = Network(height="500px", width="100%", bgcolor="#ffffff", font_color="#000000") # type: ignore
+        net = Network(height="100%", width="100%", bgcolor="#ffffff", font_color="#000000") # type: ignore
 
         # NetworkX Graph into Pyvis
         net.from_nx(G)
@@ -51,4 +53,24 @@ class GraphBuilderService:
         
         # HTML content
         html_content = net.generate_html()
+
+        responsive_css = """
+        <style>
+            html, body {
+                height: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+            .card, .card-body, #mynetwork {
+                height: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+        </style>
+        """
+        html_content = html_content.replace("</head>", f"{responsive_css}</head>")
         return html_content

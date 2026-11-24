@@ -13,10 +13,12 @@ class AppStyle:
     
     # --- EDGE TYPES (SIGNED NETWORKS) ---
     EDGE_POSITIVE = 'bg-emerald-500'
+    EDGE_POSITIVE_HEX = '#10b981'  # emerald-500
     EDGE_POSITIVE_TEXT = 'text-emerald-500'
     EDGE_NEGATIVE = 'bg-rose-500'
+    EDGE_NEGATIVE_HEX = '#f43f5e'  # rose-500
     EDGE_NEGATIVE_TEXT = 'text-rose-500'
-    
+
     # --- TEXT COLORS ---
     TEXT_MAIN = 'text-slate-900'
     TEXT_MUTED = 'text-slate-500'
@@ -58,23 +60,13 @@ class AppStyle:
     HOVER_ACCENT = 'hover:bg-blue-700 transition-all duration-150 ease-in-out'
 
     HOVER_TABLE_ROW = 'hover:bg-slate-50 transition-colors duration-100'
-    HOVER_CARD_CSS = (
-        "transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); "
-        "transform-gpu: true; "
-        "cursor: pointer;"
-    )
     
-    # Der Style, der beim Hovern injiziert wird
-    HOVER_CARD_EFFECT = (
-        "this.style.transform='scale(1.01)'; "
-        "this.style.borderColor='#cbd5e1'; "  # entspricht border-slate-300
-        "this.style.boxShadow='0 4px 12px rgba(0,0,0,0.02), 0 16px 32px -4px rgba(0,0,0,0.04)';"
-    )
-    
-    # Der Style, der beim Verlassen des Hovers zurückgesetzt wird
-    HOVER_CARD_RESET = (
-        "this.style.transform='scale(1)'; "
-        "this.style.borderColor='#e2e8f0'; "  # entspricht border-slate-200/60
-        "this.style.boxShadow='none';"
+    HOVER_CARD = (
+        'cursor-pointer transform-gpu '
+        'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] '
+        'hover:scale-[1.012] hover:-translate-y-0.5 '
+        'hover:border-slate-300 '
+        'hover:shadow-[0_12px_28px_-6px_rgba(15,23,42,0.08),0_4px_10px_-2px_rgba(15,23,42,0.04)] '
+        'active:scale-[0.99] active:duration-100'
     )
 

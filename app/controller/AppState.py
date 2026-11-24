@@ -7,6 +7,24 @@ from nicegui import app
 from signnet.models.SignedNetwork import SignedNetwork
 
 @dataclass
+class NetworkStats:
+    filename: str
+    is_directed: bool
+    num_nodes: int
+    num_edges: int
+    num_components: int
+    num_isolated_nodes: int
+    negative_edge_ratio: float    
+    balanced_triad_ratio: float   
+    density: float                
+
+@dataclass
+class NetworkBundle:
+    network: SignedNetwork
+    stats: Optional[NetworkStats] = None
+    visualization_html: Optional[str] = None
+
+@dataclass
 class AppState:
     """
     Defines the structural schema and lifecycle fields for session-isolated application states.
@@ -26,8 +44,8 @@ class AppState:
     # ------------------------------------------------------------------
     # NETWORK
     # ------------------------------------------------------------------
-    current_network: Optional[SignedNetwork] = None
-    network_visualization_html: Optional[str] = None
+    loaded: Optional[NetworkBundle] = None
+    selected: Optional[NetworkBundle] = None
 
     # ==================================================================
     # FILE LOADING
@@ -106,3 +124,4 @@ def get_session_state() -> AppState:
     if 'state' not in app.storage.tab:
         app.storage.tab['state'] = AppState()
     return app.storage.tab['state']
+

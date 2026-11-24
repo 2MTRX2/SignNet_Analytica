@@ -1,6 +1,9 @@
 # LoadingController.py
+from dataclasses import replace
+
 from signnet.services.LoadingService import LoadingService
-from app.controller.AppState import AppState
+from signnet.services.NetworkStatsService import NetworkStatsService
+from app.controller.AppState import AppState, NetworkBundle, NetworkStats
 
 from signnet.io.DatasetRegistry import DatasetRegistry
 
@@ -10,8 +13,18 @@ class LoadingController:
     """
     def __init__(self):
         self.network_service = LoadingService()
+        self.stats_service = NetworkStatsService()
 
-    def process_upload(self, file_buffer, app_state: AppState) -> None:
+    def _create_bundle(self, net, filename: str, is_directed: bool) -> NetworkBundle:
+        raw_stats = self.stats_service.compute_stats(net)
+        stats = NetworkStats(
+            filename=filename,
+            is_directed=is_directed,
+            **raw_stats
+        )
+        return NetworkBundle(network=net, stats=stats)
+
+    def process_upload(self, file_buffer, app_state: AppState, filename) -> None:
         """Validates input streams, executes the network parser service, and updates session outputs.
 
         Args:
@@ -23,7 +36,7 @@ class LoadingController:
         
         try:
             # Service Execution
-            app_state.current_network = self.network_service.load_and_build_network(
+            net = self.network_service.load_and_build_network(
                 file_buffer=file_buffer,
                 file_type=app_state.selected_file_type,
                 representation_type=app_state.selected_repr_type,
@@ -32,6 +45,8 @@ class LoadingController:
                 target_col=app_state.target_column_name,
                 sign_col=app_state.sign_column_name
             )
+
+            app_state.loaded = self._create_bundle(net, filename=filename, is_directed=app_state.is_directed)
         finally:
             app_state.is_loading = False
 
@@ -58,7 +73,7 @@ class LoadingController:
             # Open data
             with open(file_path, "rb") as file_buffer:
                 # Read file
-                app_state.current_network = self.network_service.load_and_build_network(
+                net = self.network_service.load_and_build_network(
                     file_buffer=file_buffer,# type: ignore
                     file_type=dataset_info.file_type,
                     representation_type=dataset_info.representation_type,
@@ -67,6 +82,8 @@ class LoadingController:
                     target_col='target',
                     sign_col='sign'
                 )
+
+                app_state.loaded = self._create_bundle(net, filename=dataset_name, is_directed=False)
                 
                 # Update UI-Dropdowns state
                 app_state.selected_file_type = dataset_info.file_type
@@ -74,3 +91,11 @@ class LoadingController:
                 
         finally:
             app_state.is_loading = False
+
+
+    def commit_loaded_network(self, app_state: AppState) -> None:
+        """The loaded network is selected as the active network."""
+        if not app_state.loaded:
+            raise ValueError("No loaded network available to select.")
+                
+        app_state.selected = replace(app_state.loaded)
